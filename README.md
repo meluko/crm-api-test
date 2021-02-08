@@ -2,14 +2,26 @@
 # crm-api-test  
 ### The Agile Monkeys CRM API Test
 - [Brief description](#brief-description)  
+- [Testing](#testing)
 - [Api endpoints](#api-endpoints)
   * [Customer](#customer)
   * [User](#user)
   * [Image/Photo upload](#image-photo-upload)
 
 ### Brief description
+
 Implementation of a customer management API. 
 (This document will be incrementally grow along with the project itself.)
+
+# Testing
+Launch tests with
+```shell script
+npm test
+```
+
+Tests directory structure:
+
+* **test/api-endpoints**: top-level api tests
 
 ### Api endpoints
 

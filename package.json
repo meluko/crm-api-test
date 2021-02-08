@@ -1,0 +1,31 @@
+{
+  "name": "crm-api-test",
+  "version": "0.0.1",
+  "description": "The Agile Monkeys CRM API Test",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "eslint . && mocha --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meluko/crm-api-test.git"
+  },
+  "author": "meluko@gmail.com",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/meluko/crm-api-test/issues"
+  },
+  "homepage": "https://github.com/meluko/crm-api-test#readme",
+  "devDependencies": {
+    "chai": "^4.3.0",
+    "eslint": "^7.19.0",
+    "mocha": "^8.2.1",
+    "supertest": "^6.1.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
