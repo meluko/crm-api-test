@@ -1,0 +1,363 @@
+openapi: '3.0.0'
+info:
+  description: The Agile Monkeys CRM API Test
+  version: v0.0.1
+  title: crm-api-test
+tags:
+  - name: customer
+    description: Customer of the shop
+  - name: user
+    description: Person that can manage customer data
+  - name: admin
+    description: User with the privilege to manage other user's data
+
+paths:
+  '/api/v1/customer/{customerId}':
+    get:
+      operationId: getCustomer
+      tags:
+        - customer
+      summary: Returns information of a stored customer by its id
+      parameters:
+        - name: customerId
+          description: Customer id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '404':
+          description: Not found. A customer with given customerId could not be found
+    put:
+      operationId: updateCustomer
+      tags:
+        - customer
+      summary: Updates existing customer
+      description: Updates an exisisting customer with given parameters by its customerId
+      parameters:
+        - name: customerId
+          description: Customer id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: name
+          description: Customer name
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: surname
+          description: Customer surname
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: photoUrl
+          description: Stored customer's photo url.
+          in: body
+          required: false
+          schema:
+            type: string
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '404':
+          description: Not found. Tried to update an unexistent customer
+    delete:
+      operationId: deleteCustomer
+      tags:
+        - customer
+      summary: Deletes existing customer
+      description: Deletes an exisisting customer by its customerId
+      parameters:
+        - name: customerId
+          description: Customer id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '404':
+          description: Not found. Tried to delete an unexistent customer
+
+  '/api/v1/customer':
+    # ToDo: add pagination parameters to listCustomers
+    get:
+      operationId: listCustomers
+      tags:
+        - customer
+      summary: Get a list of stored customers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customerList'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+    post:
+      operationId: creatCustomer
+      tags:
+        - customer
+      summary: Create a new customer
+      description: Create a new customer with given parameters
+      parameters:
+        - name: name
+          description: Customer name
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: surname
+          description: Customer surname
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: photoUrl
+          description: Stored customer's photo url. (GET images)
+          in: body
+          required: false
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+
+  '/api/v1/user/{userId}':
+    get:
+      operationId: getUser
+      tags:
+        - user
+      summary: Returns information of a stored user by its userId
+      parameters:
+        - name: userId
+          description: User id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '403':
+          description: Forbidden. Resource not available to non-admin users
+        '404':
+          description: Not found. A user with given userId could not be found
+    put:
+      operationId: updateUser
+      tags:
+        - user
+      summary: Update existing user by its userId.
+      parameters:
+        - name: id
+          description: User id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: name
+          description: User name
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: surname
+          description: User surname
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: isAdmin
+          description: Whether user is an admin
+          in: body
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '403':
+          description: Forbidden. Resource not available to non-admin users
+        '404':
+          description: Not found. Tried to update an unexistent customer
+    delete:
+      operationId: deleteUser
+      tags:
+        - user
+      summary: Deletes existing user
+      description: Deletes an exisisting user by its userId
+      parameters:
+        - name: userId
+          description: User id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '403':
+          description: Forbidden. Resource not available to non-admin users
+        '404':
+          description: Not found. Tried to delete an unexistent user
+  '/api/v1/user':
+    # ToDo: add pagination parameters to listUsers
+    get:
+      operationId: listUsers
+      tags:
+        - user
+      summary: Get a list of stored users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userList'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '403':
+          description: Forbidden. Resource not available to non-admin users
+    post:
+      operationId: creatUser
+      tags:
+        - user
+      summary: Create a new user
+      description: Create a new user with given parameters
+      parameters:
+        - name: name
+          description: Customer name
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: surname
+          description: Customer surname
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: isAdmin
+          description: Whether user is an admin
+          in: body
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '403':
+          description: Forbidden. Resource not available to non-admin users
+
+components:
+  schemas:
+    customer:
+      type: object
+      required:
+        - id
+        - name
+        - surname
+      properties:
+        id:
+          type: integer
+          example: 5619
+        name:
+          type: string
+          example: 'John'
+        surname:
+          type: string
+          example: 'Doe'
+        photoURL:
+          type: string
+          example: '/images/{imageId}'
+    customerList:
+      type: object
+      properties:
+        # ToDo: Add pagination properties
+        rows:
+          type: array
+          description: array of customers
+          items:
+            $ref: '#/components/schemas/customer'
+        count:
+          type: integer
+          description: number of rows in the response
+    user:
+      type: object
+      required:
+        - id
+        - name
+        - surname
+        - isAdmin
+      properties:
+        id:
+          type: integer
+          example: 1827
+        name:
+          type: string
+          example: 'John'
+        surname:
+          type: string
+          example: 'Doe'
+        isAdmin:
+          type: boolean
+          example: false
+    userList:
+      type: object
+      properties:
+        # ToDo: Add pagination properties
+        rows:
+          type: array
+          description: array of users
+          items:
+            $ref: '#/components/schemas/user'
+        count:
+          type: integer
+          description: number of rows in the response
