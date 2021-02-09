@@ -25,7 +25,7 @@ describe('Customer endpoints', function () {
         .expect(404, done);
     });
 
-    it('Should return 200 with user data', function (done) {
+    it('Should return 200 with customer data', function (done) {
       const customerId = 1;
       request(app)
         .get(`/api/v1/customer/${customerId}`)
@@ -212,4 +212,3 @@ describe('Customer endpoints', function () {
   });
 
 });
-
