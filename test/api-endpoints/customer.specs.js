@@ -30,7 +30,7 @@ describe('Customer endpoints', function () {
       request(app)
         .get(`/api/v1/customer/${customerId}`)
         .set('Authorization', `Bearer ${USER_TOKEN}`)
-        .expect('Content-Type', /json/)
+        .expect('Content-Type', 'application/json')
         .expect(200, done);
     });
 
@@ -39,7 +39,7 @@ describe('Customer endpoints', function () {
       request(app)
         .get(`/api/v1/customer/${customerId}`)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .expect('Content-Type', /json/)
+        .expect('Content-Type', 'application/json')
         .expect(200, done);
     });
 
