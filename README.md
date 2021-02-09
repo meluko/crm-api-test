@@ -42,4 +42,5 @@ Tests directory structure:
 - **POST[​/api​/v1​/user** Create a new user
 
 #### Image/Photo upload
-- This API endpoints are not covered ye
+- **GET[/api/v1/image/imageId]** returns an uploaded image
+- **POST[/api/v1/image]** Uploads an image. Returns its metadata (id and path)
