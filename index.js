@@ -3,8 +3,8 @@
 const {server: {port}} = require('config');
 const App = require('./src/App');
 const Routes = require('./src/Routes');
-const schemas = require('./src/Schemas');
-const middlewares = require('./src/Middlewares');
+const schemas = require('./src/schemas');
+const middlewares = require('./src/middlewares');
 const Controllers = require('./src/Controllers');
 
 const services = {};  // ToDo: No service implemented
