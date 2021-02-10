@@ -1,9 +1,10 @@
 'use strict';
 
-module.exports = function(db) {
+module.exports = function(dependencies) {
   return {
-    user: require('./User')(db),
-    customer: require('./Customer')(db),
-    imageMeta: require('./ImageMeta')(db),
+    userService: require('./UserService')(dependencies),
+    customerService: require('./CustomerService')(dependencies),
+    imageService: require('./ImageService')(dependencies),
+    imageMetaService: require('./ImageMetaService')(dependencies)
   };
 };

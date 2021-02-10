@@ -11,7 +11,7 @@ module.exports = function(config) {
   const Services = require('./Services');
 
   const db = DB(config.database, models);
-  const services = Services(db);
+  const services = Services({db, config});
   const controllers = Controllers({services});
   const routes = Routes({middlewares, controllers, schemas});
 

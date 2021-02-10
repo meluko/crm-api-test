@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = function (db) {
-  const {ImageMeta} = db;
+module.exports = function (dependencies) {
+  const {ImageMeta} = dependencies.db;
 
   const get = function (id) {
     return ImageMeta.findOne({where: {id}});

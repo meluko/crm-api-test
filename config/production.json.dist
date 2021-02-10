@@ -10,5 +10,6 @@
     "database": "crm-api-test",
     "username": "crm_api_user",
     "password": "crm_api_user_password"
-  }
+  },
+  "uploadsPath": "./uploads"
 }

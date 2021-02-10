@@ -59,6 +59,14 @@ describe('Image endpoints', function () {
 
   describe('POST /api/v1/image', function () {
 
+    it('Should return 400 if file is not an image', function (done) {
+      request(app)
+        .post('/api/v1/image')
+        .set('Authorization', `Bearer ${USER_TOKEN}`)
+        .attach('file', __filename)
+        .expect(400, done);
+    });
+
     it('Should return 401 if client is not authenticated', function (done) {
       request(app)
         .post('/api/v1/image')
