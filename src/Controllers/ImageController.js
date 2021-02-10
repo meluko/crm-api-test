@@ -1,7 +1,5 @@
 'use strict';
 
-const path = require('path');
-
 module.exports = function (dependencies) {
   const {
     imageService,
@@ -14,7 +12,7 @@ module.exports = function (dependencies) {
     if (!imageMeta) {
       return res.status(404).send('Not Found');
     }
-    res.sendFile(path.join(__dirname, '../../test/api-endpoints/picture.png'));
+    res.sendFile(imageMeta.path);
   };
 
   const create = function (req, res) {

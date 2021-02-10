@@ -1,8 +1,9 @@
 'use strict';
 
 const {expect} = require('chai');
+const {join} = require('path');
 const request = require('supertest');
-const BuildApp = require('./BuildApp');
+const BuildApp = require('../util/BuildApp');
 const ImageController = require('../../src/Controllers/ImageController');
 const ImageRoutes = require('../../src/Routes/image');
 
@@ -18,6 +19,7 @@ const app = BuildApp(services, controllers, ImageRoutes);
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
+const SAMPLE_IMAGE_PATH = join(__dirname, '../assets/picture.png');
 
 describe('Image endpoints', function () {
 
@@ -38,7 +40,7 @@ describe('Image endpoints', function () {
     });
 
     it('Should return uploaded image', function (done) {
-      services.imageMetaService.get = () => ({id: 1, path: 'uploads/0001.png'});
+      services.imageMetaService.get = () => ({id: 1, path: SAMPLE_IMAGE_PATH});
       request(app)
         .get('/api/v1/image/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -46,7 +48,7 @@ describe('Image endpoints', function () {
     });
 
     it('Should allow admin user to download images', function (done) {
-      services.imageMetaService.get = () => ({id: 1, path: 'uploads/0001.png'});
+      services.imageMetaService.get = () => ({id: 1, path: SAMPLE_IMAGE_PATH});
       request(app)
         .get('/api/v1/image/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
@@ -70,7 +72,7 @@ describe('Image endpoints', function () {
       request(app)
         .post('/api/v1/image')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
-        .attach('file', `${__dirname}/picture.png`)
+        .attach('file', join(__dirname, '../assets/picture.png'))
         .expect(200, (err, res) => {
           expect(res.body).to.be.deep.equal({id: 1, path: targetFileName});
           done();
@@ -84,7 +86,7 @@ describe('Image endpoints', function () {
       request(app)
         .post('/api/v1/image')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .attach('file', `${__dirname}/picture.png`)
+        .attach('file', join(__dirname, '../assets/picture.png'))
         .expect(200, (err, res) => {
           expect(res.body).to.be.deep.equal({id: 1, path: targetFileName});
           done();
