@@ -7,7 +7,7 @@ const BuildApp = require('../util/BuildApp');
 const CustomerController = require('../../src/Controllers/CustomerController');
 const CustomerRoutes = require('../../src/Routes/customer');
 
-const services = {customerService: {}};
+const services = {customerService: {}, imageMetaService: {}};
 const controllers = {customerController: CustomerController({services})};
 
 const app = BuildApp(services, controllers, CustomerRoutes);
@@ -72,6 +72,22 @@ describe('Customer endpoints', function () {
   });
 
   describe('PUT /api/v1/customer/{customerId}', function () {
+
+    it('Should return 400 if referenced imageMeta is not found', function (done) {
+      services.imageMetaService.get = () => null;
+      const customerId = 2771;
+      const requestBody = {name: 'John', surname: 'Doe', imageMetaId: 99};
+      request(app)
+        .put(`/api/v1/customer/${customerId}`)
+        .set('Authorization', `Bearer ${USER_TOKEN}`)
+        .send(requestBody)
+        .set('Accept', 'application/json')
+        .expect(400, (err, res) => {
+          expect(res.text).to.be.equal('Invalid imageMeta');
+          done();
+        });
+
+    });
 
     it('Should return 401 if client is not authenticated', function (done) {
       const customerId = 1;
@@ -213,6 +229,18 @@ describe('Customer endpoints', function () {
   });
 
   describe('POST /api/v1/customer', function () {
+
+    it('Should return 400 if referenced imageMeta is not found', function (done) {
+      services.imageMetaService.get = () => null;
+      request(app)
+        .post('/api/v1/customer')
+        .set('Authorization', `Bearer ${USER_TOKEN}`)
+        .send({name: 'John', surname: 'Doe', imageMetaId: 9})
+        .expect(400, (err, res) => {
+          expect(res.text).to.be.equal('Invalid imageMeta');
+          done();
+        });
+    });
 
     it('Should return 401 if client is not authenticated', function (done) {
       request(app)
