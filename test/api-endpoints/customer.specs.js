@@ -146,28 +146,28 @@ describe('Customer endpoints', function () {
 
     it('Should return 200 if customer is successfully delete', function (done) {
       services.customerService.get = () => customer;
-      services.customerService.remove = sinon.stub();
+      services.customerService.destroy = sinon.stub();
       const customerId = 2771;
       request(app)
         .delete(`/api/v1/customer/${customerId}`)
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(200, () => {
-          expect(services.customerService.remove.callCount).to.be.deep.equal(1);
-          expect(services.customerService.remove.getCall(0).args[0]).to.be.deep.equal(customerId);
+          expect(services.customerService.destroy.callCount).to.be.deep.equal(1);
+          expect(services.customerService.destroy.getCall(0).args[0]).to.be.deep.equal(customerId);
           done();
         });
     });
 
     it('Should allow admin user to delete customer', function (done) {
       services.customerService.get = () => customer;
-      services.customerService.remove = sinon.stub();
+      services.customerService.destroy = sinon.stub();
       const customerId = 2771;
       request(app)
         .delete(`/api/v1/customer/${customerId}`)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, () => {
-          expect(services.customerService.remove.callCount).to.be.deep.equal(1);
-          expect(services.customerService.remove.getCall(0).args[0]).to.be.deep.equal(customerId);
+          expect(services.customerService.destroy.callCount).to.be.deep.equal(1);
+          expect(services.customerService.destroy.getCall(0).args[0]).to.be.deep.equal(customerId);
           done();
         });
     });

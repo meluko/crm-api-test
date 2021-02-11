@@ -1,48 +1,58 @@
 'use strict';
 
 module.exports = function(dependencies) {
-  const {customerService} = dependencies.services;
+  const {
+    customerService,
+    imageMetaService
+  } = dependencies.services;
 
-  const list = function (req, res) {
-    const customers = customerService.find();
+  const list = async function (req, res) {
+    const customers = await customerService.find();
     res.status(200).json({
       count: customers.length,
       rows: customers
     });
   };
 
-  const create = function (req, res) {
-    const customer = customerService.create(req.body);
+  const create = async function (req, res) {
+    const {imageMetaId} = req.body;
+    if (imageMetaId) {
+      const imageMeta = await imageMetaService.get(imageMetaId);
+      if (!imageMeta) {
+        return res.status(400).send('Invalid imageMeta');
+      }
+    }
+    const customer = await customerService.create(req.body);
     res.status(200).json(customer);
   };
 
-  const get = function (req, res) {
+  const get = async function (req, res) {
     const {customerId} = req.params;
-    const customer = customerService.get(customerId);
+    const customer = await customerService.get(customerId);
     if (!customer) {
       return res.status(404).send('Not Found');
     }
     res.status(200).json(customer);
   };
 
-  const update = function (req, res) {
+  const update = async function (req, res) {
     const {customerId} = req.params;
-    const customer = customerService.get(customerId);
+    const customer = await customerService.get(customerId);
     if (!customer) {
       return res.status(404).send('Not Found');
     }
-    const updatedcustomer = customerService.update(customerId, req.body);
+    const updatedcustomer = await customerService.update(customerId, req.body);
     res.status(200).json(updatedcustomer);
   };
 
-  const remove = function (req, res) {
+  const remove = async function (req, res) {
     const {customerId} = req.params;
-    const customer = customerService.get(customerId);
+    const customer = await customerService.get(customerId);
     if (!customer) {
       return res.status(404).send('Not Found');
     }
-    customerService.remove(customerId);
-    res.status(200).json(customer);
+    await customerService.destroy(customerId);
+    res.status(200).json({});
   };
 
   return {
