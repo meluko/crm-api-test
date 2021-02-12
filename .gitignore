@@ -106,3 +106,4 @@ dist
 config/local.json
 docker/mysql-data
 uploads
+keys

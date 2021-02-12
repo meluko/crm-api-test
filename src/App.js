@@ -1,11 +1,13 @@
 'use strict';
 
 const express = require('express');
-const bodyParser = require('body-parser');
 
-module.exports = function(routes) {
+module.exports = function (appMiddlewares, routes) {
   const app = express();
-  app.use(bodyParser.json());
+  app.set('trust proxy', true);
+  Object
+    .values(appMiddlewares)
+    .forEach(middleware => app.use(middleware));
   routes(app);
 
   return app;
