@@ -1,44 +1,65 @@
 'use strict';
 
 const {expect} = require('chai');
+const sinon = require('sinon');
 const request = require('supertest');
+const BuildApp = require('./BuildApp');
+const UserController = require('../../src/Controllers/UserController');
+const UserRoutes = require('../../src/Routes/user');
+
+const services = {userService: {}};
+const controllers = {userController: UserController({services})};
+
+const app = BuildApp(services, controllers, UserRoutes);
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
+
+const user = {
+  id: 1,
+  name: 'Alice',
+  surname: 'Wondergirl'
+};
+
+const userList = [
+  {id: 1, name: 'Alice', surname: 'Wondergirl'},
+  {id: 2, name: 'Bob', surname: 'Squarepants'}
+];
 
 describe('User endpoints', function () {
 
   describe('GET ​/api​/v1​/user​/{userId}', function () {
 
     it('Should return 401 if client is not authenticated', function (done) {
-      const userId = 1;
       request(app)
-        .get(`/api/v1/user/${userId}`)
+        .get('/api/v1/user/1')
         .expect(401, done);
     });
 
-    it('should return 403 if client is not and admin user', function(done) {
-      const userId = 1;
+    it('should return 403 if client is not and admin user', function (done) {
       request(app)
-        .get(`/api/v1/user/${userId}`)
+        .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(403, done);
     });
 
     it('Should return 404 if user is not found', function (done) {
-      const userId = 100;
+      services.userService.get = () => null;
       request(app)
-        .get(`/api/v1/user/${userId}`)
+        .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return 200 with user data', function (done) {
-      const userId = 1;
+      services.userService.get = () => user;
       request(app)
-        .get(`/api/v1/user/${userId}`)
+        .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .expect(200, done);
+        .expect(200, (err, res) => {
+          expect(res.body).to.be.deep.equal(user);
+          done();
+        });
     });
 
   });
@@ -46,18 +67,16 @@ describe('User endpoints', function () {
   describe('PUT ​/api​/v1​/user​/{userId}', function () {
 
     it('Should return 401 if client is not authenticated', function (done) {
-      const userId = 1;
       request(app)
-        .put(`/api/v1/user/${userId}`)
+        .put('/api/v1/user/1')
         .send({name: 'Alice', surname: 'Wondergirl'})
         .set('Accept', 'application/json')
         .expect(401, done);
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
-      const userId = 1;
       request(app)
-        .put(`/api/v1/user/${userId}`)
+        .put('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .send({name: 'Alice', surname: 'Wondergirl'})
         .set('Accept', 'application/json')
@@ -65,9 +84,9 @@ describe('User endpoints', function () {
     });
 
     it('Should return 404 if user is not found', function (done) {
-      const userId = 100;
+      services.userService.get = () => null;
       request(app)
-        .put(`/api/v1/user/${userId}`)
+        .put('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .send({name: 'Alice', surname: 'Wondergirl'})
         .set('Accept', 'application/json')
@@ -75,18 +94,20 @@ describe('User endpoints', function () {
     });
 
     it('Should return 202 with updated user data', function (done) {
-      const userId = 1;
+      services.userService.get = () => user;
+      services.userService.update = sinon.stub().returns(user);
+      const userId = 9325;
+      const requestBody = {name: 'Alice', surname: 'Wondergirl'};
       request(app)
         .put(`/api/v1/user/${userId}`)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .send({name: 'Alice', surname: 'Wondergirl'})
+        .send(requestBody)
         .set('Accept', 'application/json')
         .expect(202, (err, res) => {
-          expect(res.body).to.be.deep.equal({
-            id: 1,
-            name: 'Alice',
-            surname: 'Wondergirl'
-          });
+          expect(res.body).to.be.deep.equal(user);
+          expect(services.userService.update.callCount).to.be.equal(1);
+          expect(services.userService.update.getCall(0).args[0]).to.be.equal(userId);
+          expect(services.userService.update.getCall(0).args[1]).to.be.deep.equal(requestBody);
           done();
         });
     });
@@ -111,19 +132,25 @@ describe('User endpoints', function () {
     });
 
     it('Should return 404 if user is not found', function (done) {
-      const userId = 100;
+      services.userService.get = () => null;
       request(app)
-        .delete(`/api/v1/user/${userId}`)
+        .delete('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return 200 if user is successfully delete', function (done) {
-      const userId = 1;
+      services.userService.get = () => user;
+      services.userService.remove = sinon.stub();
+      const userId = 9325;
       request(app)
         .delete(`/api/v1/user/${userId}`)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .expect(200, done);
+        .expect(200, () => {
+          expect(services.userService.remove.callCount).to.be.deep.equal(1);
+          expect(services.userService.remove.getCall(0).args[0]).to.be.deep.equal(userId);
+          done();
+        });
     });
 
   });
@@ -144,25 +171,15 @@ describe('User endpoints', function () {
     });
 
     it('Should return 200 with the list of stored users', function (done) {
+      services.userService.list = () => userList;
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(
-            {
-              'count': 2,
-              'rows': [
-                {
-                  name: 'Alice',
-                  surname: 'Wondergirl'
-                },
-                {
-                  name: 'Bob',
-                  surname: 'Squarepants'
-                }
-              ]
-            }
-          );
+          expect(res.body).to.be.deep.equal({
+            rows: userList,
+            count: 2
+          });
           done();
         });
     });
@@ -187,16 +204,13 @@ describe('User endpoints', function () {
     });
 
     it('Should return 200 with the stored user data', function (done) {
+      services.userService.create = () => user;
       request(app)
         .post('/api/v1/user')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .send({name: 'Alice', surname: 'Wondergirl'})
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal({
-            id: 1,
-            name: 'Alice',
-            surname: 'Wondergirl'
-          });
+          expect(res.body).to.be.deep.equal(user);
           done();
         });
     });
