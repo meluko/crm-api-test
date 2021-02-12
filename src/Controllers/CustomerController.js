@@ -36,6 +36,14 @@ module.exports = function(dependencies) {
   };
 
   const update = async function (req, res) {
+    const {imageMetaId} = req.body;
+    if (imageMetaId) {
+      const imageMeta = await imageMetaService.get(imageMetaId);
+      if (!imageMeta) {
+        return res.status(400).send('Invalid imageMeta');
+      }
+    }
+
     const {customerId} = req.params;
     const customer = await customerService.get(customerId);
     if (!customer) {
