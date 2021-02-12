@@ -4,7 +4,7 @@ module.exports = function(dependencies) {
   const {customerService} = dependencies.services;
 
   const list = function (req, res) {
-    const customers = customerService.list();
+    const customers = customerService.find();
     res.status(200).json({
       count: customers.length,
       rows: customers

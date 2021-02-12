@@ -1,0 +1,40 @@
+'use strict';
+
+module.exports = function (db) {
+  const {Customer} = db;
+
+  const get = function (id) {
+    return Customer.findOne({where: {id}});
+  };
+
+  const find = function () {
+    return Customer.findAndCountAll({});
+  };
+
+  const create = function (customerData) {
+    return Customer.create(customerData);
+  };
+
+  const update = async function (id, customerData) {
+    const options = {where: {id}, plain: true};
+    const [affectedRows] = await Customer.update(customerData, options);
+
+    if (!affectedRows) {
+      return null;
+    }
+
+    return {id, ...customerData};
+  };
+
+  const destroy = function(id) {
+    return Customer.destroy({where: {id}});
+  };
+
+  return {
+    get,
+    find,
+    create,
+    update,
+    destroy
+  };
+};

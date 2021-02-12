@@ -3,7 +3,7 @@
 const {expect} = require('chai');
 const sinon = require('sinon');
 const request = require('supertest');
-const BuildApp = require('./BuildApp');
+const BuildApp = require('../util/BuildApp');
 const UserController = require('../../src/Controllers/UserController');
 const UserRoutes = require('../../src/Routes/user');
 
@@ -171,7 +171,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 200 with the list of stored users', function (done) {
-      services.userService.list = () => userList;
+      services.userService.find = () => userList;
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)

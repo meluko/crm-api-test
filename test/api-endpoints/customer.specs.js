@@ -3,7 +3,7 @@
 const {expect} = require('chai');
 const sinon = require('sinon');
 const request = require('supertest');
-const BuildApp = require('./BuildApp');
+const BuildApp = require('../util/BuildApp');
 const CustomerController = require('../../src/Controllers/CustomerController');
 const CustomerRoutes = require('../../src/Routes/customer');
 
@@ -183,7 +183,7 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 200 with the list of stored customers', function (done) {
-      services.customerService.list = () => customerList;
+      services.customerService.find = () => customerList;
       request(app)
         .get('/api/v1/customer')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -197,10 +197,17 @@ describe('Customer endpoints', function () {
     });
 
     it('Should allow admin user to list stored customers', function (done) {
+      services.customerService.find = () => customerList;
       request(app)
         .get('/api/v1/customer')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .expect(200, done);
+        .expect(200, (err, res) => {
+          expect(res.body).to.be.deep.equal({
+            count: 2,
+            rows: customerList
+          });
+          done();
+        });
     });
 
   });

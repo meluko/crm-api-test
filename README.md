@@ -1,12 +1,57 @@
 
 # crm-api-test  
 ### The Agile Monkeys CRM API Test
-- [Brief description](#brief-description)  
+- [Brief description](#brief-description) 
+- [API setup](#api-setup) 
 - [Testing](#testing)
-- [Api endpoints](#api-endpoints)
+- [API endpoints](#api-endpoints)
   * [Customer](#customer)
   * [User](#user)
   * [Image/Photo upload](#image-photo-upload)
+  
+### API Setup
+In order to start your API service up, you will need some initial setup
+
+- Enable access to a mysql database so your service can reach it. There is a handy docker-compose file at `docker/composed-mysql.yml` have a local one with ease.
+```shell script
+    docker-compose -f docker/composed-mysql.yml up -d
+```
+
+- Create a database to be used by your service. Use a name of your choice
+~~~sql
+    CREATE DATABASE [YOUR_DB_NAME];
+~~~
+
+- Create a database user to be used by your API service and grant permissions over your new database.
+If you use the docker-compose approach your db config is as follows, otherwise, use the config values of your choice
+    * **root password**: rootpassword
+    * **database**: crm_api_test
+    * **user**: crm_api_user
+    * **password**: crm_api_user_password
+    
+~~~sql
+    docker exec -it mysql mysql -uroot -prootpassword
+    CREATE USER 'crm_api_user'@'localhost' IDENTIFIED BY 'crm_api_user_password';
+    GRANT ALL PRIVILEGES ON crm_api_user.* TO 'crm_api_test'@'localhost';
+~~~
+
+- Create a configuration file. Copy `config/production.json.dist` to `config/production.json`
+and customize it as needed.
+
+- Install all needed dependencies
+```shell script
+    npm i
+```
+
+- Setup database schema running migrations (this is needed whenever new migrations are added)
+```shell script
+    npm run sequelize db:migrate
+```
+
+- Run tests
+```shell script
+    npm test
+```
 
 ### Brief description
 

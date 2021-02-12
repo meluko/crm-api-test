@@ -1,0 +1,14 @@
+{
+  "server": {
+    "port": "8088"
+  },
+  "database": {
+    "dialect": "mysql",
+    "env": "development",
+    "host": "localhost",
+    "port": "3306",
+    "database": "crm-api-test",
+    "username": "crm_api_user",
+    "password": "crm_api_user_password"
+  }
+}

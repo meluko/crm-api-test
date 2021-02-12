@@ -1,0 +1,18 @@
+# Helper file to set up a development mysql server
+version: '3.1'
+
+services:
+  db:
+    image: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=crm_api_test
+      - MYSQL_USER=crm_api_user
+      - MYSQL_PASSWORD=crm_api_user_password
