@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (db) {
+module.exports = function ({db}) {
   const {User} = db;
 
   const get = function (id) {

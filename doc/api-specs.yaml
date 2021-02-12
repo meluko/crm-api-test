@@ -333,6 +333,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/imageMeta'
+        '400':
+          description: Bad Request. File seems not to be an image
         '401':
           description: Unauthorized. Client not auhthenticated (Not a user)
 

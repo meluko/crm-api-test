@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = function (db) {
-  const {Customer} = db;
+module.exports = function (dependencies) {
+  const {Customer} = dependencies.db;
 
   const get = function (id) {
     return Customer.findOne({where: {id}});

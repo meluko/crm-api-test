@@ -6,7 +6,7 @@ const truncateTables = require('../util/truncateTables');
 
 const models = require('../../src/DB/models');
 const db = require('../../src/DB')(config.database, models);
-const userService = require('../../src/Services/UserService')(db);
+const userService = require('../../src/Services/UserService')({db});
 
 const sampleUsers = [
   {name: 'Rachel', surname: 'Green'},
