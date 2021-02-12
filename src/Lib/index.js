@@ -14,7 +14,7 @@ const {uuid} = require('uuidv4');
 
 const GithubClient = require('./GithubClient');
 
-module.exports = function (config) {
+module.exports = function (dependencies) {
   const lib = {
     _,
     axios,
@@ -30,6 +30,6 @@ module.exports = function (config) {
   };
   return {
     ...lib,
-    githubClient: GithubClient({config, lib})
+    githubClient: GithubClient({...dependencies, lib})
   };
 };

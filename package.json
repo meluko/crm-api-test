@@ -49,5 +49,10 @@
     "query-string": "^6.14.0",
     "sequelize": "^6.5.0",
     "uuidv4": "^6.2.6"
+  },
+  "nyc": {
+    "instrumentation": {
+      "excludes": ["**/node_modules/**", "src/Lib/GithubClient.js"]
+    }
   }
 }

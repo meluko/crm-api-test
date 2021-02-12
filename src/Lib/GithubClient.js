@@ -42,5 +42,5 @@ module.exports = function (dependencies) {
   return {
     fetchUserData,
     fetchAccessToken
-  }
+  };
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 const ValidateToken = require('./ValidateToken');
-const ClaimRole = require('./ClaimRole');
+const AdminAccess = require('./AdminAccess');
 
 module.exports = function (dependencies) {
   const {
@@ -12,6 +12,6 @@ module.exports = function (dependencies) {
     jsonBodyParser: bodyParser.json(),
     schemaValidator: expressJoi.createValidator({}),
     validateToken: ValidateToken(dependencies),
-    claimRole: ClaimRole(dependencies)
+    adminAccess: AdminAccess(dependencies)
   };
 };

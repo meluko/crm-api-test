@@ -1,12 +1,14 @@
 'use strict';
 
+const config = require('config');
 const App = require('../../src/App');
-const lib = require('../../src/lib/lib');
+const Lib = require('../../src/Lib');
 const Middlewares = require('../../src/Middlewares');
 const schemas = require('../../src/schemas');
 
 module.exports = function({routes, ...dependencies}) {
-  dependencies.lib = lib;
+  dependencies.config = config;
+  dependencies.lib = Lib(dependencies);
   dependencies.middlewares = Middlewares(dependencies);
   dependencies.schemas = schemas;
   dependencies.routes = routes(dependencies);

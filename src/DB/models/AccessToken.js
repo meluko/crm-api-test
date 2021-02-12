@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    expiresAt: {
+      type: DataTypes.DATE(3),
+      allowNull: false
+    },
     ...auditoryFields
   });
 

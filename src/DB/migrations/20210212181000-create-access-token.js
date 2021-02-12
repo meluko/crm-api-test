@@ -27,8 +27,12 @@ module.exports = {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-        allowNull: true
+        onDelete: 'CASCADE',
+        allowNull: false
+      },
+      expiresAt: {
+        type: DataTypes.DATE(3),
+        allowNull: false
       },
       ...auditoryFields
     });

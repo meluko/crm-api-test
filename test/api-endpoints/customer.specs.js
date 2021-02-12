@@ -33,6 +33,7 @@ const customerList = [
 describe('Customer endpoints', function () {
 
   before(function() {
+    services.authService.isValidToken = () => true;
     services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
   });
 
@@ -94,7 +95,6 @@ describe('Customer endpoints', function () {
           expect(res.text).to.be.equal('Invalid imageMeta');
           done();
         });
-
     });
 
     it('Should return 401 if client is not authenticated', function (done) {

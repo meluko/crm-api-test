@@ -5,12 +5,14 @@ const migrationFields = function (literal, DataTypes) {
     createdAt: {
       type: DataTypes.DATE(3),
       defaultValue: literal('CURRENT_TIMESTAMP(3)'),
-      field: 'createdAt',
+      allowNull: false,
+      field: 'createdAt'
     },
     updatedAt: {
       type: DataTypes.DATE(3),
       defaultValue: literal('CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)'),
-      field: 'updatedAt',
+      allowNull: false,
+      field: 'updatedAt'
     },
   };
 };

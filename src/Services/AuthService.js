@@ -9,36 +9,48 @@ module.exports = function (dependencies) {
   const {
     githubClient
   } = dependencies.lib;
+  const {
+    auth: {tokenTTL}
+  } = dependencies.config;
 
   const storeToken = function (accessToken, userData) {
-    return AccessToken.create({
+    const params = {
       userId: userData.id,
       accessToken: accessToken,
-      githubId: userData.githubId
-    });
+      githubId: userData.githubId,
+      expiresAt: Date.now() + tokenTTL
+    };
+    return AccessToken.create(params);
   };
 
-  const isAdminToken = async function(accessToken) {
+  const isValidToken = async function (accessToken) {
+    const token = await AccessToken.findOne({where: {accessToken}, raw: true});
+
+    return !!(token && token.expiresAt.getTime() > Date.now());
+  };
+
+  const isAdminToken = async function (accessToken) {
     const options = {
       where: {
         accessToken
       },
       include: [{model: User}]
     };
-    const result = await  AccessToken.findOne(options);
-    return result && result.user && result.user.isAdmin;
+    const data = await AccessToken.findOne(options);
+    return data && data.user && data.user.isAdmin;
   };
 
-  const fetchAccessToken = function(code, state) {
+  const fetchAccessToken = function (code, state) {
     return githubClient.fetchAccessToken(code, state);
   };
 
-  const fetchUserData = function(accessToken) {
-    return githubClient.fetchUserData(accessToken)
+  const fetchUserData = function (accessToken) {
+    return githubClient.fetchUserData(accessToken);
   };
 
   return {
     storeToken,
+    isValidToken,
     isAdminToken,
     fetchAccessToken,
     fetchUserData

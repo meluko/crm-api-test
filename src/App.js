@@ -5,6 +5,7 @@ module.exports = function ({middlewares, routes, views, lib}) {
   app.set('trust proxy', true);
 
   app.use('/api/v1', middlewares.validateToken);
+  app.use('/api/v1/user', middlewares.adminAccess);
   app.use(middlewares.jsonBodyParser);
 
   app.engine('html', views);

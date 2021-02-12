@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 module.exports = dependencies => app => {
   const authController = dependencies.controllers.authController;
 

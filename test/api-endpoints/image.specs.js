@@ -25,6 +25,7 @@ const SAMPLE_IMAGE_PATH = join(__dirname, '../assets/picture.png');
 describe('Image endpoints', function () {
 
   before(function() {
+    services.authService.isValidToken = () => true;
     services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
   });
 
