@@ -19,6 +19,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    githubId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null
+    },
+    githubLogin: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null
     }
   }, { timestamps: false });
 

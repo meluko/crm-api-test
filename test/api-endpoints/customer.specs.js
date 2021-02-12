@@ -7,10 +7,14 @@ const BuildApp = require('../util/BuildApp');
 const CustomerController = require('../../src/Controllers/CustomerController');
 const CustomerRoutes = require('../../src/Routes/customer');
 
-const services = {customerService: {}, imageMetaService: {}};
+const services = {
+  customerService: {},
+  imageMetaService: {},
+  authService: {}
+};
 const controllers = {customerController: CustomerController({services})};
 
-const app = BuildApp(services, controllers, CustomerRoutes);
+const app = BuildApp({services, controllers, routes: CustomerRoutes});
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
@@ -27,6 +31,10 @@ const customerList = [
 ];
 
 describe('Customer endpoints', function () {
+
+  before(function() {
+    services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
+  });
 
   describe('GET /api/v1/customer/{customerId}', function () {
 

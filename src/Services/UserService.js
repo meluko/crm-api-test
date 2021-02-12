@@ -30,11 +30,29 @@ module.exports = function ({db}) {
     return User.destroy({where: {id}});
   };
 
+  const getByGithubId = function (githubId) {
+    return User.findOne({where: {githubId}, raw: true});
+  };
+
+  const createGithubUser = async function(userData) {
+    userData = {
+      name: 'User',
+      surname: userData.name,
+      isAdmin: false,
+      githubId: userData.id,
+      githubLogin: userData.login
+    };
+    await User.create(userData);
+    return userData;
+  };
+
   return {
     get,
     find,
     create,
     update,
-    destroy
+    destroy,
+    getByGithubId,
+    createGithubUser,
   };
 };

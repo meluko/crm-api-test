@@ -1,10 +1,8 @@
 'use strict';
 
-const fs = require('fs');
-const {resolve} = require('path');
-
 module.exports = dependencies => {
   const {uploadsPath} = dependencies.config;
+  const {path: {resolve}, fs} = dependencies.lib;
 
   const saveImage = function(srcPath, extension) {
     const [,fileName] = srcPath.match(/.*\/(.*)/);

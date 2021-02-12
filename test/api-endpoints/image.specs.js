@@ -9,19 +9,25 @@ const ImageRoutes = require('../../src/Routes/image');
 
 const services = {
   imageMetaService: {},
-  imageService: {}
+  imageService: {},
+  authService: {}
 };
 const controllers = {
   imageController: ImageController({services})
 };
 
-const app = BuildApp(services, controllers, ImageRoutes);
+const app = BuildApp({services, controllers, routes: ImageRoutes});
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
 const SAMPLE_IMAGE_PATH = join(__dirname, '../assets/picture.png');
 
 describe('Image endpoints', function () {
+
+  before(function() {
+    services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
+  });
+
 
   describe('GET /api/v1/image/{imageId}', function () {
 

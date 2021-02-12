@@ -7,10 +7,13 @@ const BuildApp = require('../util/BuildApp');
 const UserController = require('../../src/Controllers/UserController');
 const UserRoutes = require('../../src/Routes/user');
 
-const services = {userService: {}};
+const services = {
+  userService: {},
+  authService: {}
+};
 const controllers = {userController: UserController({services})};
 
-const app = BuildApp(services, controllers, UserRoutes);
+const app = BuildApp({services, controllers, routes: UserRoutes});
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
@@ -27,6 +30,10 @@ const userList = [
 ];
 
 describe('User endpoints', function () {
+
+  before(function() {
+    services.authService.tokenHasRoles = token => ADMIN_TOKEN === token;
+  });
 
   describe('GET ​/api​/v1​/user​/{userId}', function () {
 

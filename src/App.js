@@ -1,13 +1,16 @@
 'use strict';
 
-const express = require('express');
-
-module.exports = function (appMiddlewares, routes) {
-  const app = express();
+module.exports = function ({middlewares, routes, views, lib}) {
+  const app = lib.express();
   app.set('trust proxy', true);
-  Object
-    .values(appMiddlewares)
-    .forEach(middleware => app.use(middleware));
+
+  app.use('/api/v1', middlewares.validateToken);
+  app.use(middlewares.jsonBodyParser);
+
+  app.engine('html', views);
+  app.set('views', lib.path.join(__dirname,'Views/templates'));
+  app.set('view engine', 'html');
+
   routes(app);
 
   return app;

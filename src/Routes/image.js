@@ -1,11 +1,8 @@
 'use strict';
 
-const multer = require('multer');
 
 module.exports = dependencies => app => {
-  const {
-
-  } = dependencies.middlewares;
+  const {multer} = dependencies.lib;
   const imageController = dependencies.controllers.imageController;
 
   const upload = multer({

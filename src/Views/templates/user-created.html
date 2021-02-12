@@ -1,0 +1,13 @@
+<html>
+    <pre>
+        <h3>Your user has been ceated</h3>
+        Your user data contains default fields taken from github.
+        <ul>
+            <li>name: <b><%= name %></b></li>
+            <li>surname: <b><%= surname %></b></li>
+        </ul>
+        An admin user must update your default data<br/>
+        Start using the api adding the following header to your requests:<br/>
+        Authorization: Bearer <%= access_token %>
+    </pre>
+</html>
