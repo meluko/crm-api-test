@@ -9,7 +9,6 @@ const customerId = Joi.object({
 });
 
 const customerBody = Joi.object({
-  id: id.optional(),
   name: Joi.string().regex(/[A-Za-z]/).max(16).required(),
   surname: Joi.string().regex(/[\s A-Za-z]/).max(32).required(),
   imageMetaId: [id.optional(), Joi.allow(null)]

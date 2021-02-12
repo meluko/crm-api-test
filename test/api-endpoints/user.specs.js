@@ -107,7 +107,10 @@ describe('User endpoints', function () {
           expect(res.body).to.be.deep.equal(user);
           expect(services.userService.update.callCount).to.be.equal(1);
           expect(services.userService.update.getCall(0).args[0]).to.be.equal(userId);
-          expect(services.userService.update.getCall(0).args[1]).to.be.deep.equal(requestBody);
+          expect(services.userService.update.getCall(0).args[1]).to.be.deep.equal({
+            ...requestBody,
+            isAdmin: false
+          });
           done();
         });
     });
@@ -141,14 +144,14 @@ describe('User endpoints', function () {
 
     it('Should return 200 if user is successfully delete', function (done) {
       services.userService.get = () => user;
-      services.userService.remove = sinon.stub();
+      services.userService.destroy = sinon.stub();
       const userId = 9325;
       request(app)
         .delete(`/api/v1/user/${userId}`)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, () => {
-          expect(services.userService.remove.callCount).to.be.deep.equal(1);
-          expect(services.userService.remove.getCall(0).args[0]).to.be.deep.equal(userId);
+          expect(services.userService.destroy.callCount).to.be.deep.equal(1);
+          expect(services.userService.destroy.getCall(0).args[0]).to.be.deep.equal(userId);
           done();
         });
     });
