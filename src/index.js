@@ -14,8 +14,8 @@ module.exports = function (dependencies) {
   const db = DB(dependencies.config.database, models);
   const views = Views(dependencies);
   const services = Services({db, ...dependencies});
+  const middlewares = Middlewares({services, ...dependencies});
   const controllers = Controllers({services, views, ...dependencies});
-  const middlewares = Middlewares(dependencies);
   const routes = Routes({middlewares, controllers, schemas, ...dependencies});
 
   const app = App({middlewares, routes, ...dependencies, views});

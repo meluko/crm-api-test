@@ -1,7 +1,7 @@
 'use strict';
 
 const App = require('../../src/App');
-const lib = require('../../src/lib');
+const lib = require('../../src/lib/lib');
 const Middlewares = require('../../src/Middlewares');
 const schemas = require('../../src/schemas');
 

@@ -1,7 +1,7 @@
 'use strict';
 
-
 module.exports = dependencies => allowedRoles => {
+  const t = 0
   const {
     authService
   } = dependencies.services;

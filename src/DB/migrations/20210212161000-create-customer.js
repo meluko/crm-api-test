@@ -1,9 +1,11 @@
 'use strict';
 
+const {migrationFields} = require('../models/AuditoryFields');
 const tableName = 'customer';
 
 module.exports = {
-  up: (queryInterface, { DataTypes }) => {
+  up: (queryInterface, {DataTypes, literal}) => {
+    const auditoryFields = migrationFields(literal, DataTypes);
     return queryInterface.createTable(tableName, {
       id: {
         type: DataTypes.INTEGER,
@@ -27,8 +29,9 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
         allowNull: true
-      }
-    }, { timestamps: false });
+      },
+      ...auditoryFields
+    });
   },
 
   down: queryInterface => {

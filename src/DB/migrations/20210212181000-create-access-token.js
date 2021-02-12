@@ -1,10 +1,10 @@
 'use strict';
 
 const {migrationFields} = require('../models/AuditoryFields');
-const tableName = 'user';
+const tableName = 'accessToken';
 
 module.exports = {
-  up: (queryInterface, {DataTypes, literal}) => {
+  up: (queryInterface, { DataTypes, literal }) => {
     const auditoryFields = migrationFields(literal, DataTypes);
     return queryInterface.createTable(tableName, {
       id: {
@@ -12,28 +12,23 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      name: {
+      accessToken: {
         type: DataTypes.STRING,
         allowNull: false
-      },
-      surname: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      isAdmin: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
       },
       githubId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        defaultValue: null
+        allowNull: false
       },
-      githubLogin: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        defaultValue: null
+      userId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'user',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+        allowNull: true
       },
       ...auditoryFields
     });

@@ -1,7 +1,7 @@
 'use strict';
 
 const {server, ...config} = require('config');
-const lib = require('./src/lib');
+const lib = require('./src/Lib')(config);
 const app = require('./src')({config, lib});
 
 const key =  lib.fs.readFileSync(lib.path.resolve(__dirname, 'keys/key.pem'));

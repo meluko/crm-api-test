@@ -12,16 +12,24 @@ const path = require('path');
 const queryString = require('query-string');
 const {uuid} = require('uuidv4');
 
-module.exports = {
-  _,
-  axios,
-  bodyParser,
-  express,
-  expressJoi,
-  fs,
-  https,
-  multer,
-  path,
-  queryString,
-  uuid,
+const GithubClient = require('./GithubClient');
+
+module.exports = function (config) {
+  const lib = {
+    _,
+    axios,
+    bodyParser,
+    express,
+    expressJoi,
+    fs,
+    https,
+    multer,
+    path,
+    queryString,
+    uuid
+  };
+  return {
+    ...lib,
+    githubClient: GithubClient({config, lib})
+  };
 };
