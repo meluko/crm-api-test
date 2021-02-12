@@ -3,4 +3,5 @@
 module.exports = dependencies => app => {
   require('./customer')(dependencies)(app);
   require('./user')(dependencies)(app);
+  require('./image')(dependencies)(app);
 };

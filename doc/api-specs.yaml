@@ -241,6 +241,7 @@ paths:
           description: Forbidden. Resource not available to non-admin users
         '404':
           description: Not found. Tried to delete an unexistent user
+
   '/api/v1/user':
     # ToDo: add pagination parameters to listUsers
     get:
@@ -295,6 +296,45 @@ paths:
           description: Unauthorized. Client not auhthenticated (Not a user)
         '403':
           description: Forbidden. Resource not available to non-admin users
+
+  /api/v1/image/{imageId}:
+    get:
+      operationId: getImage
+      tags:
+        - image
+      summary: Get an uploaded image
+      responses:
+        '200':
+          description: OK
+          content:
+            image/*:
+              schema:
+                $ref: '#/components/schemas/image'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
+        '404':
+          description: Not found. No such image available
+
+  /api/vi/image:
+    post:
+      operationId: uploadImage
+      tags:
+        - image
+      summary: Uploads an image
+      description: Uploads an image, return imageMeta
+      parameters:
+        - name: file
+          in: formData
+          description: The file to upload.
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageMeta'
+        '401':
+          description: Unauthorized. Client not auhthenticated (Not a user)
 
 components:
   schemas:
@@ -361,3 +401,18 @@ components:
         count:
           type: integer
           description: number of rows in the response
+    image:
+      type: string
+      format: binary
+    imageMeta:
+      type: object
+      required:
+        - id
+        - path
+      properties:
+        id:
+          type: integer
+          example: 1827
+        path:
+          type: string
+          example: 'uploads/6412.png'
