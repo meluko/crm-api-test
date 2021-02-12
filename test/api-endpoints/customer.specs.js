@@ -179,7 +179,7 @@ describe('Customer endpoints', function () {
         .expect(401, done);
     });
 
-    it('Should return 200 with the list of stored customers', function (done) {
+    it('Should return 200 with stored customer data', function (done) {
       request(app)
         .post('/api/v1/customer')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -194,7 +194,7 @@ describe('Customer endpoints', function () {
         });
     });
 
-    it('Should allow admin user to list stored customers', function (done) {
+    it('Should allow admin user to create customers', function (done) {
       request(app)
         .post('/api/v1/customer')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
@@ -212,3 +212,4 @@ describe('Customer endpoints', function () {
   });
 
 });
+
