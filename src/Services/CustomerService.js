@@ -3,8 +3,8 @@
 module.exports = function (dependencies) {
   const {Customer} = dependencies.db;
 
-  const get = function (id) {
-    return Customer.findOne({where: {id}});
+  const get = async function (id) {
+    return await Customer.findOne({where: {id}});
   };
 
   const find = function () {
