@@ -122,7 +122,7 @@ describe('CustomerService', function () {
       expect(customer).to.be.shallowDeepEqual({id, ...customerData});
     });
 
-    it('should return null if customer was not founbd', async function () {
+    it('should return null if customer was not found', async function () {
       const id = 10;
       const customerData = {
         name: 'fred',

@@ -38,6 +38,7 @@ describe('ValidateToken', function () {
   });
 
   it('Should return 401 if token is not valid', async function () {
+    services.authService.get = () => 'token';
     services.authService.isValidToken = () => false;
     const req = {
       headers: {
@@ -54,6 +55,7 @@ describe('ValidateToken', function () {
   });
 
   it('Should call next if token is valid', async function () {
+    services.authService.get = () => 'token';
     services.authService.isValidToken = () => true;
     const req = {
       headers: {
@@ -69,21 +71,6 @@ describe('ValidateToken', function () {
     expect(next.callCount).to.be.equal(1);
   });
 
-  it('Should set valid token to request', async function () {
-    services.authService.isValidToken = () => true;
-    const req = {
-      headers: {
-        authorization: 'Bearer VALIDOTKEN'
-      }
-    };
-    const res = {
-      sendStatus: () => {}
-    };
-    const next = sinon.stub();
-    await validateToken(req, res, next);
-
-    expect(req.token).to.be.equal('VALIDOTKEN');
-  });
 
 });
 

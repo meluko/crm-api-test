@@ -34,7 +34,6 @@ const sampleUsers = [
 ];
 
 describe('AuthService', function () {
-
   beforeEach(async function () {
     await truncateTables(db)(['user', 'accessToken']);
 
@@ -47,12 +46,12 @@ describe('AuthService', function () {
     db.sequelize.close();
   });
 
-  describe('storeToken', function () {
+  describe('create', function () {
 
     it('should store given token', async function () {
       const user = await db.User.findOne({where: {githubId: 3244}});
       const accessToken = 'MYSUPERCOOLACCESSTOKEN';
-      await authService.storeToken(accessToken, user);
+      await authService.create(accessToken, user);
 
       const token = await db.AccessToken.findOne({where: {githubId: 3244}, raw: true});
 
@@ -67,7 +66,7 @@ describe('AuthService', function () {
       this.clock = sinon.useFakeTimers();
       const user = await db.User.findOne({where: {githubId: 3244}});
       const accessToken = 'MYSUPERCOOLACCESSTOKEN';
-      await authService.storeToken(accessToken, user);
+      await authService.create(accessToken, user);
 
       const token = await db.AccessToken.findOne({where: {githubId: 3244}});
 
@@ -78,24 +77,32 @@ describe('AuthService', function () {
 
   });
 
-  describe('isValidToken', function () {
+  describe('get', function() {
 
-    it('Should return false if token does not exist', async function () {
-      const isValidToken = await authService.isValidToken('NONEXISTENTTOKEN');
+    it('Should include associated user with token data', async function() {
+      const accessToken = 'MYSUPERCOOLACCESSTOKEN';
+      const user = await db.User.findOne({where: {githubId: 3244}});
+      await authService.create(accessToken, user);
 
-      expect(isValidToken).to.be.false;
+      const tokenData = await authService.get(accessToken);
+
+      expect(tokenData.user.dataValues).to.be.shallowDeepEqual(sampleUsers[3]);
     });
+
+  });
+
+  describe('isValidToken', function () {
 
     it('Should return false if token is stale', async function () {
       this.clock = sinon.useFakeTimers();
       const accessToken = 'MYSUPERCOOLACCESSTOKEN';
       const user = await db.User.findOne({where: {githubId: 3244}});
-      await authService.storeToken(accessToken, user);
-      await db.AccessToken.update({createdAt: 0}, {where: {accessToken}});
+      await authService.create(accessToken, user);
 
       this.clock.tick(config.auth.tokenTTL);
 
-      const isValidToken = await authService.isValidToken(accessToken);
+      const token = await authService.get(accessToken);
+      const isValidToken = authService.isValidToken(token);
 
       expect(isValidToken).to.be.false;
       this.clock.restore();
@@ -104,8 +111,10 @@ describe('AuthService', function () {
     it('Should return true if token is valid', async function () {
       const accessToken = 'MYSUPERCOOLACCESSTOKEN';
       const user = await db.User.findOne({where: {githubId: 3244}});
-      await authService.storeToken(accessToken, user);
-      const isValidToken = await authService.isValidToken(accessToken);
+      await authService.create(accessToken, user);
+
+      const token = await authService.get(accessToken);
+      const isValidToken = authService.isValidToken(token);
 
       expect(isValidToken).to.be.true;
     });
@@ -113,23 +122,27 @@ describe('AuthService', function () {
   });
 
   describe('isAdminToken', function () {
-    const userAccessToke = 'MYSUPERCOOLUSERACCESSTOKEN';
+    const userAccessToken = 'MYSUPERCOOLUSERACCESSTOKEN';
     const adminAccessToken = 'MYSUPERCOOLADMINACCESSTOKEN';
+
     const assignToken = async function (githubId, token) {
       const user = await db.User.findOne({where: {githubId}, raw: true});
-      await authService.storeToken(token, user);
+      await authService.create(token, user);
     };
 
     it('Should return true if token\'s user is an admin', async function () {
       await assignToken(7777, adminAccessToken);
-      const isAdminUser = await authService.isAdminToken(adminAccessToken);
+      const token = await authService.get(adminAccessToken);
+      const isAdminUser = authService.isAdminToken(token);
 
       expect(isAdminUser).to.be.true;
     });
 
     it('Should return false if token\'s user is not an admin', async function () {
-      await assignToken(3244, userAccessToke);
-      const isAdminUser = await authService.isAdminToken(userAccessToke);
+      await assignToken(3244, userAccessToken);
+      const token = await authService.get(userAccessToken);
+
+      const isAdminUser = authService.isAdminToken(token);
 
       expect(isAdminUser).to.be.false;
     });

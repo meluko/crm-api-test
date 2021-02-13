@@ -32,6 +32,7 @@ const userList = [
 describe('User endpoints', function () {
 
   beforeEach(function() {
+    services.authService.get = () => 'token';
     services.authService.isValidToken = () => true;
     services.authService.isAdminToken = () => true;
     services.authService.tokenHasRoles = token => ADMIN_TOKEN === token;

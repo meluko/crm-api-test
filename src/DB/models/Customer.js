@@ -1,6 +1,6 @@
 'use strict';
 
-const {modelFields} = require('./auditoryFields');
+const {modelFields, associateToUser} = require('./auditoryFields');
 
 module.exports = (sequelize, DataTypes) => {
   const auditoryFields = modelFields(DataTypes);
@@ -29,15 +29,15 @@ module.exports = (sequelize, DataTypes) => {
     ...auditoryFields
   }, {timestamps: false});
 
-
-  Customer.associate = ({ImageMeta}) => {
-    Customer.belongsTo(ImageMeta, {
+  Customer.associate = ({ImageMeta, User}) => {
+    Customer.imageMeta = Customer.belongsTo(ImageMeta, {
       foreignKey: {
         name: 'imageMetaId',
         allowNull: true
       },
       onDelete: 'CASCADE'
     });
+    associateToUser(User)(Customer);
   };
 
   return Customer;

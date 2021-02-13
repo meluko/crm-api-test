@@ -1,6 +1,6 @@
 'use strict';
 
-const {modelFields} = require('./auditoryFields');
+const {modelFields, associateToUser} = require('./auditoryFields');
 
 module.exports = (sequelize, DataTypes) => {
   const auditoryFields = modelFields(DataTypes);
@@ -17,7 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     ...auditoryFields
   }, {timestamps: false});
 
-  ImageMeta.associate = () => {};
+  ImageMeta.associate = ({User}) => {
+    associateToUser(User)(ImageMeta);
+  };
 
   return ImageMeta;
 };

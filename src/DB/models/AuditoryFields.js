@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 'use strict';
 
 const migrationFields = function (literal, DataTypes) {
@@ -15,6 +14,26 @@ const migrationFields = function (literal, DataTypes) {
       allowNull: false,
       field: 'updatedAt'
     },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'user',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+      allowNull: true
+    },
+    updatedBy: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'user',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+      allowNull: true
+    }
   };
 };
 
@@ -25,7 +44,28 @@ const modelFields = function (DataTypes) {
   };
 };
 
+const associateToUser = UserModel => Model =>  {
+  console.log('MAYBE THESE LINES ARE NEEDED');
+  //  UserModel.createdCustomers = UserModel.hasMany(Model);
+  //  UserModel.updatedCustomers = UserModel.hasMany(Model);
+  Model.createdBy = Model.belongsTo(UserModel, {
+    foreignKey: {
+      name: 'createdBy',
+      allowNull: true
+    },
+    onDelete: 'CASCADE'
+  });
+  Model.updatedBy = Model.belongsTo(UserModel, {
+    foreignKey: {
+      name: 'updatedBy',
+      allowNull: true
+    },
+    onDelete: 'CASCADE'
+  });
+};
+
 module.exports = {
   migrationFields,
-  modelFields
+  modelFields,
+  associateToUser
 };

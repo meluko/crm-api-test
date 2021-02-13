@@ -1,6 +1,6 @@
 'use strict';
 
-const {modelFields} = require('./auditoryFields');
+const {modelFields, associateToUser} = require('./auditoryFields');
 
 module.exports = (sequelize, DataTypes) => {
   const auditoryFields = modelFields(DataTypes);
@@ -36,8 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     ...auditoryFields
   }, { timestamps: false });
 
-  User.associate = ({AccessToken}) => {
+  User.associate = ({AccessToken, Customer}) => {
     User.accessTokens = User.hasMany(AccessToken);
+    associateToUser(User)(User);
   };
 
   return User;

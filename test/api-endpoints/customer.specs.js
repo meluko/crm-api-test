@@ -33,6 +33,7 @@ const customerList = [
 describe('Customer endpoints', function () {
 
   before(function() {
+    services.authService.get = () => 'token';
     services.authService.isValidToken = () => true;
     services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
   });

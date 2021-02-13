@@ -10,7 +10,7 @@ module.exports = function (dependencies) {
   } = dependencies.lib;
   return {
     jsonBodyParser: bodyParser.json(),
-    schemaValidator: expressJoi.createValidator({}),
+    schemaValidator: expressJoi.createValidator(),
     validateToken: ValidateToken(dependencies),
     adminAccess: AdminAccess(dependencies)
   };

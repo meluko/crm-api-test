@@ -28,8 +28,8 @@ module.exports = function(dependencies) {
     if (!user) {
       return res.status(404).send('Not Found');
     }
-    await userService.update(userId, req.body);
-    res.status(200).json(user);
+    const updatedUser = await userService.update(userId, req.body);
+    res.status(200).json(updatedUser);
   };
 
   const remove = async function (req, res) {

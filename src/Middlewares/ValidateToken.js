@@ -10,13 +10,12 @@ module.exports = function (dependencies) {
       return res.sendStatus(401);
     }
 
-    const isValid = await authService.isValidToken(token);
-    if (!isValid) {
+    req.token = await authService.get(token);
+    if (!req.token || !authService.isValidToken(token)) {
       return res.sendStatus(401);
       //res.redirect(302, '/auth/login');
     }
 
-    req.token = token;
     next();
   };
 };
