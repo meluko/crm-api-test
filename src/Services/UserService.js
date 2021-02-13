@@ -1,5 +1,7 @@
 'use strict';
 
+const paginationFromQuery = require('../util/paginationFromQuery');
+
 module.exports = function ({db}) {
   const {User} = db;
 
@@ -7,8 +9,8 @@ module.exports = function ({db}) {
     return User.findOne({where: {id}});
   };
 
-  const find = function() {
-    return User.findAndCountAll({});
+  const find = function(query) {
+    return User.findAndCountAll({...paginationFromQuery(query)});
   };
 
   const create = function(userData) {

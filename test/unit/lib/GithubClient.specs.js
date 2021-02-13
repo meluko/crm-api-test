@@ -55,7 +55,7 @@ describe('GithubClient', function () {
       const expectedParams = {
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: '/',
+        redirect_uri: '',
         code,
         state
       };

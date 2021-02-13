@@ -4,11 +4,8 @@ module.exports = function(dependencies) {
   const {userService} = dependencies.services;
 
   const list = async function (req, res) {
-    const users = await userService.find();
-    res.status(200).json({
-      count: users.length || 0,
-      rows: users
-    });
+    const users = await userService.find(req.query);
+    res.status(200).json(users);
   };
 
   const create = async function (req, res) {

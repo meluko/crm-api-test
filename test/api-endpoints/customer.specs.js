@@ -207,7 +207,10 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 200 with the list of stored customers', function (done) {
-      services.customerService.find = () => customerList;
+      services.customerService.find = () => ({
+        count: customerList.length,
+        rows: customerList
+      });
       request(app)
         .get('/api/v1/customer')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -221,7 +224,10 @@ describe('Customer endpoints', function () {
     });
 
     it('Should allow admin user to list stored customers', function (done) {
-      services.customerService.find = () => customerList;
+      services.customerService.find = () => ({
+        count: customerList.length,
+        rows: customerList
+      });
       request(app)
         .get('/api/v1/customer')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)

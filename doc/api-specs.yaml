@@ -100,12 +100,34 @@ paths:
           description: Not found. Tried to delete an unexistent customer
 
   '/api/v1/customer':
-    # ToDo: add pagination parameters to listCustomers
     get:
       operationId: listCustomers
+      description: List stored customers
       tags:
         - customer
       summary: Get a list of stored customers
+      parameters:
+        - name: offset
+          description: Number of records to skip
+          in: query
+          required: false
+          schema:
+            type: number
+            default: 0
+        - name: limit
+          description: Number of records to return
+          in: query
+          required: false
+          schema:
+            type: number
+            default: 10
+        - name: order
+          description: specification of return sorting
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/order'
+
       responses:
         '200':
           description: OK
@@ -243,12 +265,32 @@ paths:
           description: Not found. Tried to delete an unexistent user
 
   '/api/v1/user':
-    # ToDo: add pagination parameters to listUsers
     get:
       operationId: listUsers
       tags:
         - user
       summary: Get a list of stored users
+      parameters:
+        - name: offset
+          description: Number of records to skip
+          in: query
+          required: false
+          schema:
+            type: number
+            default: 0
+        - name: limit
+          description: Number of records to return
+          in: query
+          required: false
+          schema:
+            type: number
+            default: 10
+        - name: order
+          description: specification of return sorting
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/order'
       responses:
         '200':
           description: OK
@@ -418,3 +460,12 @@ components:
         path:
           type: string
           example: 'uploads/6412.png'
+    order:
+      type: array
+      items:
+        type: string
+        description: colon-separated field and sorting parameters
+        example:
+          'name:DESC'
+
+
