@@ -5,7 +5,8 @@ const {expect} = require('../../util/chai');
 
 const services = {authService: {}};
 const AdminAccess = require('../../../src/Middlewares/AdminAccess');
-const adminAccess = AdminAccess({services});
+const httpContext = {get: () => {}};
+const adminAccess = AdminAccess({services, lib: {httpContext}});
 
 describe('AdminAccess', function () {
 

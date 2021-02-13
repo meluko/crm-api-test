@@ -1,11 +1,9 @@
 'use strict';
 
-const {migrationFields} = require('../models/AuditoryFields');
 const tableName = 'accessToken';
 
 module.exports = {
-  up: (queryInterface, { DataTypes, literal }) => {
-    const auditoryFields = migrationFields(literal, DataTypes);
+  up: (queryInterface, { DataTypes }) => {
     return queryInterface.createTable(tableName, {
       id: {
         type: DataTypes.INTEGER,
@@ -33,8 +31,7 @@ module.exports = {
       expiresAt: {
         type: DataTypes.DATE(3),
         allowNull: false
-      },
-      ...auditoryFields
+      }
     });
   },
 

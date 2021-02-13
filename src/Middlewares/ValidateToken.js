@@ -2,6 +2,7 @@
 
 module.exports = function (dependencies) {
   const {authService} = dependencies.services;
+  const {httpContext} = dependencies.lib;
   return async function (req, res, next) {
     const authHeader = req.headers.authorization || '';
     const [, token] = authHeader.match(/Bearer (.+)/) || [];
@@ -10,13 +11,13 @@ module.exports = function (dependencies) {
       return res.sendStatus(401);
     }
 
-    const isValid = await authService.isValidToken(token);
-    if (!isValid) {
+    const accessToken = await authService.get(token);
+    if (!accessToken || !authService.isValidToken(accessToken)) {
       return res.sendStatus(401);
       //res.redirect(302, '/auth/login');
     }
 
-    req.token = token;
+    httpContext.set('accessToken', accessToken);
     next();
   };
 };

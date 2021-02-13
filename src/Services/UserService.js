@@ -9,26 +9,25 @@ module.exports = function ({db}) {
     return User.findOne({where: {id}});
   };
 
-  const find = function(query) {
+  const find = function (query) {
     return User.findAndCountAll({...paginationFromQuery(query)});
   };
 
-  const create = function(userData) {
-    return User.create(userData);
+  const create = function (userData) {
+    return User
+      .create(userData)
+      .then(user => user.reload())
+      .then(user => user.dataValues);
   };
 
-  const update = async function (id, userData) {
-    const options = {where: {id}, plain: true};
-    const [affectedRows] = await User.update(userData, options);
-
-    if (!affectedRows) {
-      return null;
-    }
-
-    return {id, ...userData};
+  const update = async function (user, userData) {
+    return user && user
+      .update(userData)
+      .then(it => it.reload())
+      .then(user => user && user.dataValues);
   };
 
-  const destroy = function(id) {
+  const destroy = function (id) {
     return User.destroy({where: {id}});
   };
 
@@ -36,7 +35,7 @@ module.exports = function ({db}) {
     return User.findOne({where: {githubId}, raw: true});
   };
 
-  const createGithubUser = async function(userData) {
+  const createGithubUser = function (userData) {
     userData = {
       name: 'User',
       surname: userData.name,
@@ -44,8 +43,10 @@ module.exports = function ({db}) {
       githubId: userData.id,
       githubLogin: userData.login
     };
-    await User.create(userData);
-    return userData;
+    return User
+      .create(userData)
+      .then(user => user.reload())
+      .then(user => user.dataValues);
   };
 
   return {

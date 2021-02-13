@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const expressJoi = require('express-joi-validation');
 const fs = require('fs');
+const httpContext = require('express-http-context');
 const https = require('https');
 const multer = require('multer');
 const path = require('path');
@@ -23,6 +24,7 @@ module.exports = function (dependencies) {
     expressJoi,
     fs,
     https,
+    httpContext,
     multer,
     path,
     queryString,

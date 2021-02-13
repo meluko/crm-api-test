@@ -5,7 +5,8 @@ const {expect} = require('../../util/chai');
 const truncateTables = require('../../util/truncateTables');
 
 const models = require('../../../src/DB/models');
-const db = require('../../../src/DB')(config.database, models);
+const util = {bindAuditHooks: () => {}};
+const db = require('../../../src/DB')({config, models, util});
 const customerService = require('../../../src/Services/CustomerService')({db});
 
 const sampleCustomers = [
@@ -98,41 +99,41 @@ describe('CustomerService', function () {
   describe('update', function () {
 
     it('should update existing customer', async function () {
-      const id = 4;
+      const customer = await customerService.get(4);
       const customerData = {
         name: 'fred',
         surname: 'astaire'
       };
 
-      await customerService.update(id, customerData);
+      const updatedCustomer = await customerService.update(customer, customerData);
 
-      const customer = await db.Customer.findOne({where: {id}});
-      expect(customer).to.be.shallowDeepEqual({id, ...customerData});
+      expect(updatedCustomer).to.be.shallowDeepEqual(customerData);
     });
 
     it('should return customer record after update if found', async function () {
-      const id = 4;
+      const customer = await customerService.get(4);
       const customerData = {
         name: 'fred',
         surname: 'astaire'
       };
 
-      const customer = await customerService.update(id, customerData);
+      const updatedCustomer = await customerService.update(customer, customerData);
 
-      expect(customer).to.be.shallowDeepEqual({id, ...customerData});
+      expect(updatedCustomer).to.be.shallowDeepEqual(customerData);
     });
 
-    it('should return null if customer was not founbd', async function () {
-      const id = 10;
+    it('should return null if customer was not found', async function () {
+      const customer = await customerService.get(10);
       const customerData = {
         name: 'fred',
         surname: 'astaire'
       };
 
-      const customer = await customerService.update(id, customerData);
+      const updatedCustomer = await customerService.update(customer, customerData);
 
-      expect(customer).to.be.null;
+      expect(updatedCustomer).to.be.null;
     });
+
   });
 
   describe('destroy', function () {

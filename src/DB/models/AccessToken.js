@@ -1,9 +1,6 @@
 'use strict';
 
-const {modelFields} = require('./AuditoryFields');
-
-module.exports = (sequelize, DataTypes) => {
-  const auditoryFields = modelFields(DataTypes);
+module.exports = () => (sequelize, DataTypes) => {
   const AccessToken = sequelize.define('accessToken', {
     id: {
       type: DataTypes.INTEGER,
@@ -21,9 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     expiresAt: {
       type: DataTypes.DATE(3),
       allowNull: false
-    },
-    ...auditoryFields
-  });
+    }
+  }, {timestamps: false});
 
   AccessToken.associate = ({User}) => {
     AccessToken.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' });

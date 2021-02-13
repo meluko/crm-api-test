@@ -40,7 +40,7 @@ module.exports = function (dependencies) {
     } else {
       template = 'present-token.html';
     }
-    await authService.storeToken(access_token, user);
+    await authService.create(access_token, user);
     return res.render(template, { access_token, ...user});
   };
 

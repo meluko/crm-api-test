@@ -46,7 +46,7 @@ module.exports = function(dependencies) {
     if (!customer) {
       return res.status(404).send('Not Found');
     }
-    const updatedcustomer = await customerService.update(customerId, req.body);
+    const updatedcustomer = await customerService.update(customer, req.body);
     res.status(200).json(updatedcustomer);
   };
 

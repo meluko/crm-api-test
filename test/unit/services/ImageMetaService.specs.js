@@ -5,7 +5,8 @@ const {expect} = require('../../util/chai');
 const truncateTables = require('../../util/truncateTables');
 
 const models = require('../../../src/DB/models');
-const db = require('../../../src/DB')(config.database, models);
+const util = {bindAuditHooks: () => {}};
+const db = require('../../../src/DB')({config, models, util});
 const imageMetaService = require('../../../src/Services/ImageMetaService')({db});
 
 const sampleImageMeta = [

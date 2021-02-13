@@ -13,7 +13,7 @@ module.exports = function (dependencies) {
     auth: {tokenTTL}
   } = dependencies.config;
 
-  const storeToken = function (accessToken, userData) {
+  const create = (accessToken, userData) => {
     const params = {
       userId: userData.id,
       accessToken: accessToken,
@@ -23,21 +23,22 @@ module.exports = function (dependencies) {
     return AccessToken.create(params);
   };
 
-  const isValidToken = async function (accessToken) {
-    const token = await AccessToken.findOne({where: {accessToken}, raw: true});
-
-    return !!(token && token.expiresAt.getTime() > Date.now());
-  };
-
-  const isAdminToken = async function (accessToken) {
+  const get = function(accessToken) {
     const options = {
       where: {
         accessToken
       },
       include: [{model: User}]
     };
-    const data = await AccessToken.findOne(options);
-    return data && data.user && data.user.isAdmin;
+    return AccessToken.findOne(options);
+  };
+
+  const isValidToken = function (accessToken) {
+    return !!(accessToken && accessToken.expiresAt.getTime() > Date.now());
+  };
+
+  const isAdminToken = function (accessToken) {
+    return accessToken && accessToken.user && accessToken.user.isAdmin;
   };
 
   const fetchAccessToken = function (code, state) {
@@ -49,7 +50,8 @@ module.exports = function (dependencies) {
   };
 
   return {
-    storeToken,
+    create,
+    get,
     isValidToken,
     isAdminToken,
     fetchAccessToken,

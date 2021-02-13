@@ -1,7 +1,7 @@
 'use strict';
 
 const {expect} = require('../../util/chai');
-const paginationFromQuery = require('../../../src/util/paginationFromQuery');
+const paginationFromQuery = require('../../../src/util/paginationFromQuery')();
 
 describe('paginationFromQuery', function () {
 
