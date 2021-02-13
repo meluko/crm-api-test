@@ -45,9 +45,6 @@ const modelFields = function (DataTypes) {
 };
 
 const associateToUser = UserModel => Model =>  {
-  console.log('MAYBE THESE LINES ARE NEEDED');
-  //  UserModel.createdCustomers = UserModel.hasMany(Model);
-  //  UserModel.updatedCustomers = UserModel.hasMany(Model);
   Model.createdBy = Model.belongsTo(UserModel, {
     foreignKey: {
       name: 'createdBy',

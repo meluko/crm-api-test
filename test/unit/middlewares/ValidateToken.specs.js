@@ -5,7 +5,8 @@ const {expect} = require('../../util/chai');
 
 const services = {authService: {}};
 const ValidateToken = require('../../../src/Middlewares/ValidateToken');
-const validateToken = ValidateToken({services});
+const lib = {httpContext: {set: () => {}}};
+const validateToken = ValidateToken({services, lib});
 
 describe('ValidateToken', function () {
 

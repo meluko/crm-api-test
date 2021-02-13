@@ -2,7 +2,10 @@
 
 const {modelFields, associateToUser} = require('./auditoryFields');
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = dependencies =>  (sequelize, DataTypes) => {
+  const {
+    bindAuditHooks
+  } = dependencies.util;
   const auditoryFields = modelFields(DataTypes);
   const User = sequelize.define('user', {
     id: {
@@ -36,7 +39,9 @@ module.exports = (sequelize, DataTypes) => {
     ...auditoryFields
   }, { timestamps: false });
 
-  User.associate = ({AccessToken, Customer}) => {
+  bindAuditHooks(User);
+
+  User.associate = ({AccessToken}) => {
     User.accessTokens = User.hasMany(AccessToken);
     associateToUser(User)(User);
   };

@@ -2,16 +2,19 @@
 
 const SequelizeBuilder = require('./SequelizeBuilder');
 
-module.exports = function (config, models) {
+module.exports = function (dependencies) {
+  const {
+    config: {database},
+  } = dependencies;
   const {
     sequelize,
     Sequelize
-  } = SequelizeBuilder(config);
+  } = SequelizeBuilder(database);
 
-  models = Object
-    .entries(models)
+  const models = Object
+    .entries(dependencies.models)
     .reduce((models, [key, model]) => {
-      return {...models, [key]: model(sequelize, Sequelize.DataTypes)};
+      return {...models, [key]: model(dependencies)(sequelize, Sequelize.DataTypes)};
     }, {});
 
   Object

@@ -130,7 +130,7 @@ describe('Customer endpoints', function () {
         .expect(202, (err, res) => {
           expect(res.body).to.be.deep.equal(customer);
           expect(services.customerService.update.callCount).to.be.equal(1);
-          expect(services.customerService.update.getCall(0).args[0]).to.be.equal(customerId);
+          expect(services.customerService.update.getCall(0).args[0]).to.be.equal(customer);
           expect(services.customerService.update.getCall(0).args[1]).to.be.deep.equal(requestBody);
           done();
         });

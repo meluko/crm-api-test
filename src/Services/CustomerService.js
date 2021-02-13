@@ -20,11 +20,10 @@ module.exports = function (dependencies) {
       .then(user => user.dataValues);
   };
 
-  const update = async function (id, customerData) {
-    const options = {where: {id}, plain: true};
-    return Customer
-      .update(customerData, options)
-      .then(() => get(id))
+  const update = function (customer, customerData) {
+    return customer && customer
+      .update(customerData)
+      .then(it => it.reload())
       .then(customer => customer && customer.dataValues);
   };
 

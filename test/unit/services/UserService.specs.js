@@ -5,7 +5,8 @@ const {expect} = require('../../util/chai');
 const truncateTables = require('../../util/truncateTables');
 
 const models = require('../../../src/DB/models');
-const db = require('../../../src/DB')(config.database, models);
+const util = {bindAuditHooks: () => {}};
+const db = require('../../../src/DB')({config, models, util});
 const userService = require('../../../src/Services/UserService')({db});
 
 const sampleUsers = [
@@ -102,40 +103,39 @@ describe('UserService', function () {
   describe('update', function () {
 
     it('should update existing user', async function () {
-      const id = 4;
+      const user = await userService.get(4);
       const userData = {
         name: 'fred',
         surname: 'astaire'
       };
 
-      await userService.update(id, userData);
+      const updatedUser = await userService.update(user, userData);
 
-      const user = await db.User.findOne({where: {id}});
-      expect(user).to.be.shallowDeepEqual({id, ...userData});
+      expect(updatedUser).to.be.shallowDeepEqual(userData);
     });
 
     it('should return user record after update if found', async function () {
-      const id = 4;
+      const user = await userService.get(4);
       const userData = {
         name: 'fred',
         surname: 'astaire'
       };
 
-      const user = await userService.update(id, userData);
+      const updatedUser = await userService.update(user, userData);
 
-      expect(user).to.be.shallowDeepEqual({id, ...userData});
+      expect(updatedUser).to.be.shallowDeepEqual(userData);
     });
 
     it('should return null if user was not founbd', async function () {
-      const id = 10;
+      const user = await userService.get(10);
       const userData = {
         name: 'fred',
         surname: 'astaire'
       };
 
-      const user = await userService.update(id, userData);
+      const updatedUser = await userService.update(user, userData);
 
-      expect(user).to.be.null;
+      expect(updatedUser).to.be.null;
     });
   });
 

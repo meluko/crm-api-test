@@ -4,6 +4,7 @@ module.exports = function ({middlewares, routes, views, lib}) {
   const app = lib.express();
   app.set('trust proxy', true);
 
+  app.use(middlewares.httpContext);
   app.use('/api/v1', middlewares.validateToken);
   app.use('/api/v1/user', middlewares.adminAccess);
   app.use(middlewares.jsonBodyParser);

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = () => (sequelize, DataTypes) => {
   const AccessToken = sequelize.define('accessToken', {
     id: {
       type: DataTypes.INTEGER,

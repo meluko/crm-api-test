@@ -118,7 +118,7 @@ describe('User endpoints', function () {
         .expect(202, (err, res) => {
           expect(res.body).to.be.deep.equal(user);
           expect(services.userService.update.callCount).to.be.equal(1);
-          expect(services.userService.update.getCall(0).args[0]).to.be.equal(userId);
+          expect(services.userService.update.getCall(0).args[0]).to.be.equal(user);
           expect(services.userService.update.getCall(0).args[1]).to.be.deep.equal({
             ...requestBody,
             isAdmin: false
