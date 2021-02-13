@@ -187,7 +187,10 @@ describe('User endpoints', function () {
     });
 
     it('Should return 200 with the list of stored users', function (done) {
-      services.userService.find = () => userList;
+      services.userService.find = () => ({
+        count: userList.length,
+        rows: userList
+      });
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)

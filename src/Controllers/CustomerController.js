@@ -7,11 +7,8 @@ module.exports = function(dependencies) {
   } = dependencies.services;
 
   const list = async function (req, res) {
-    const customers = await customerService.find();
-    res.status(200).json({
-      count: customers.length,
-      rows: customers
-    });
+    const customers = await customerService.find(req.query);
+    res.status(200).json(customers);
   };
 
   const create = async function (req, res) {
