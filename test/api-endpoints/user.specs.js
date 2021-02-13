@@ -31,8 +31,9 @@ const userList = [
 
 describe('User endpoints', function () {
 
-  before(function() {
+  beforeEach(function() {
     services.authService.isValidToken = () => true;
+    services.authService.isAdminToken = () => true;
     services.authService.tokenHasRoles = token => ADMIN_TOKEN === token;
   });
 
@@ -45,6 +46,7 @@ describe('User endpoints', function () {
     });
 
     it('should return 403 if client is not and admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -83,6 +85,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .put('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -135,6 +138,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       const userId = 1;
       request(app)
         .delete(`/api/v1/user/${userId}`)
@@ -175,6 +179,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -207,6 +212,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not and admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .post('/api/v1/user')
         .set('Authorization', `Bearer ${USER_TOKEN}`)

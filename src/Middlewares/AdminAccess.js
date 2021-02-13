@@ -6,7 +6,8 @@ module.exports = function (dependencies) {
   } = dependencies.services;
 
   return async function (req, res, next) {
-    if (!await authService.isAdminToken(req.token)) {
+    const isAdminToken = await authService.isAdminToken(req.token);
+    if (!isAdminToken) {
       return res.sendStatus(403);
     }
 

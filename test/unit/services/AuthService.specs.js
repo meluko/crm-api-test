@@ -2,13 +2,15 @@
 
 const config = require('config');
 const sinon = require('sinon');
-const lib = require('../../src/lib');
-const {expect} = require('../util/chai');
-const truncateTables = require('../util/truncateTables');
+const {expect} = require('../../util/chai');
+const truncateTables = require('../../util/truncateTables');
 
-const models = require('../../src/DB/models');
-const db = require('../../src/DB')(config.database, models);
-const authService = require('../../src/Services/AuthService')({db, config, lib});
+const models = require('../../../src/DB/models');
+const db = require('../../../src/DB')(config.database, models);
+const lib = {
+  githubClient: {}
+};
+const authService = require('../../../src/Services/AuthService')({db, config, lib});
 
 const sampleUsers = [
   {name: 'Rachel', surname: 'Green'},
@@ -76,7 +78,7 @@ describe('AuthService', function () {
 
   });
 
-  describe('isValidToken', function() {
+  describe('isValidToken', function () {
 
     it('Should return false if token does not exist', async function () {
       const isValidToken = await authService.isValidToken('NONEXISTENTTOKEN');
@@ -113,7 +115,7 @@ describe('AuthService', function () {
   describe('isAdminToken', function () {
     const userAccessToke = 'MYSUPERCOOLUSERACCESSTOKEN';
     const adminAccessToken = 'MYSUPERCOOLADMINACCESSTOKEN';
-    const assignToken = async function(githubId, token) {
+    const assignToken = async function (githubId, token) {
       const user = await db.User.findOne({where: {githubId}, raw: true});
       await authService.storeToken(token, user);
     };
@@ -134,4 +136,29 @@ describe('AuthService', function () {
 
   });
 
+  describe('fetchAccessToken', function () {
+
+    it('should forward call to githubClient', function () {
+      const fetchAccessToken = sinon.stub();
+      lib.githubClient.fetchAccessToken = fetchAccessToken;
+      authService.fetchAccessToken('code', 'state');
+
+      expect(fetchAccessToken.callCount).to.be.equal(1);
+      expect(fetchAccessToken.getCall(0).args).to.be.deep.equal(['code', 'state']);
+    });
+
+  });
+
+  describe('fetchUserData', function () {
+
+    it('should forward call to githubClient', function () {
+      const fetchUserData = sinon.stub();
+      lib.githubClient.fetchUserData = fetchUserData;
+      authService.fetchUserData('accessToken');
+
+      expect(fetchUserData.callCount).to.be.equal(1);
+      expect(fetchUserData.getCall(0).args[0]).to.be.equal('accessToken');
+    });
+
+  });
 });

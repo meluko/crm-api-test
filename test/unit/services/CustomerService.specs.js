@@ -1,12 +1,12 @@
 'use strict';
 
 const config = require('config');
-const {expect} = require('../util/chai');
-const truncateTables = require('../util/truncateTables');
+const {expect} = require('../../util/chai');
+const truncateTables = require('../../util/truncateTables');
 
-const models = require('../../src/DB/models');
-const db = require('../../src/DB')(config.database, models);
-const customerService = require('../../src/Services/CustomerService')({db});
+const models = require('../../../src/DB/models');
+const db = require('../../../src/DB')(config.database, models);
+const customerService = require('../../../src/Services/CustomerService')({db});
 
 const sampleCustomers = [
   {name: 'Chico', surname: 'Marx'},

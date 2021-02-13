@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 'use strict';
 
 const migrationFields = function (literal, DataTypes) {

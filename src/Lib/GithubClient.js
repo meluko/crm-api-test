@@ -7,7 +7,7 @@ const GITHUB_USER = 'https://api.github.com/user';
 
 module.exports = function (dependencies) {
   const {github:
-    {client_id, client_secret}
+    {clientId, clientSecret}
   } = dependencies.config;
   const {
     queryString,
@@ -16,9 +16,9 @@ module.exports = function (dependencies) {
 
   const fetchAccessToken = async function (code, state) {
     const query = {
-      client_id,
-      client_secret,
-      redirect_uri: '',
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: '/',
       code,
       state
     };
@@ -29,7 +29,6 @@ module.exports = function (dependencies) {
 
     return queryString.parse(response.data).access_token;
   };
-
 
   const fetchUserData = function (access_token) {
     return axios.request({

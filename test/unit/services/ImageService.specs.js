@@ -4,10 +4,10 @@ const path = require('path');
 const fs = require('fs');
 const remove = require('remove');
 
-const {expect} = require('../util/chai');
-const ImageService = require('../../src/Services/ImageService');
+const {expect} = require('../../util/chai');
+const ImageService = require('../../../src/Services/ImageService');
 
-const SAMPLE_IMAGE_PATH = path.join(__dirname, '/../assets/picture.png');
+const SAMPLE_IMAGE_PATH = path.join(__dirname, '/../../assets/picture.png');
 const TEST_TMP_PATH = path.join(__dirname, '/tmp');
 const TEST_UPLOADS_PATH = path.join(__dirname, '/uploads');
 

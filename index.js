@@ -13,5 +13,5 @@ lib.https.createServer({key: key, cert: cert }, app).listen(server.port, () => {
     .map(it => it.route)
     .filter(it => it)
     .map(it => it.path)
-  )
+  );
 });
