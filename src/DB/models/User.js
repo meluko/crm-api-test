@@ -1,6 +1,9 @@
 'use strict';
 
+const {modelFields} = require('./auditoryFields');
+
 module.exports = (sequelize, DataTypes) => {
+  const auditoryFields = modelFields(DataTypes);
   const User = sequelize.define('user', {
     id: {
       type: DataTypes.INTEGER,
@@ -19,10 +22,23 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
-    }
+    },
+    githubId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null
+    },
+    githubLogin: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null
+    },
+    ...auditoryFields
   }, { timestamps: false });
 
-  User.associate = () => {};
+  User.associate = ({AccessToken}) => {
+    User.accessTokens = User.hasMany(AccessToken);
+  };
 
   return User;
 };

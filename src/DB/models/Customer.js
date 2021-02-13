@@ -1,6 +1,9 @@
 'use strict';
 
+const {modelFields} = require('./auditoryFields');
+
 module.exports = (sequelize, DataTypes) => {
+  const auditoryFields = modelFields(DataTypes);
   const Customer = sequelize.define('customer', {
     id: {
       type: DataTypes.INTEGER,
@@ -22,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
         model: 'imageMeta',
         key: 'id'
       }
-    }
+    },
+    ...auditoryFields
   }, {timestamps: false});
 
 

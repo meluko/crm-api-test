@@ -1,18 +1,18 @@
 'use strict';
 
-const {join} = require('path');
+const path = require('path');
 const fs = require('fs');
 const remove = require('remove');
 
-const {expect} = require('../util/chai');
-const ImageService = require('../../src/Services/ImageService');
+const {expect} = require('../../util/chai');
+const ImageService = require('../../../src/Services/ImageService');
 
-const SAMPLE_IMAGE_PATH = join(__dirname, '/../assets/picture.png');
-const TEST_TMP_PATH = join(__dirname, '/tmp');
-const TEST_UPLOADS_PATH = join(__dirname, '/uploads');
+const SAMPLE_IMAGE_PATH = path.join(__dirname, '/../../assets/picture.png');
+const TEST_TMP_PATH = path.join(__dirname, '/tmp');
+const TEST_UPLOADS_PATH = path.join(__dirname, '/uploads');
 
 const config = {uploadsPath: TEST_UPLOADS_PATH};
-const imageService = ImageService({config});
+const imageService = ImageService({config, lib: {fs, path}});
 
 describe('ImageService', function () {
 
@@ -31,10 +31,10 @@ describe('ImageService', function () {
     it('Should store image from given path to uploads path', async function () {
       const imageName = 'image_0001';
       const extension = 'png' ;
-      const path = join(TEST_TMP_PATH, imageName);
-      fs.copyFileSync(SAMPLE_IMAGE_PATH, path);
+      const dstPath = path.join(TEST_TMP_PATH, imageName);
+      fs.copyFileSync(SAMPLE_IMAGE_PATH, dstPath);
 
-      imageService.saveImage(path, extension);
+      imageService.saveImage(dstPath, extension);
 
       const dirContent = fs.readdirSync(TEST_UPLOADS_PATH);
 
@@ -44,12 +44,12 @@ describe('ImageService', function () {
     it('Should return stored image path', async function () {
       const imageName = 'image_0001';
       const extension = 'png' ;
-      const srcPath = join(TEST_TMP_PATH, imageName);
+      const srcPath = path.join(TEST_TMP_PATH, imageName);
       fs.copyFileSync(SAMPLE_IMAGE_PATH, srcPath);
 
       const storePath = imageService.saveImage(srcPath, extension);
 
-      expect(storePath).to.be.equal(join(TEST_UPLOADS_PATH, `${imageName}.${extension}`));
+      expect(storePath).to.be.equal(path.join(TEST_UPLOADS_PATH, `${imageName}.${extension}`));
     });
 
   });

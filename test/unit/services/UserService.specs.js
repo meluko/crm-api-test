@@ -1,18 +1,18 @@
 'use strict';
 
 const config = require('config');
-const {expect} = require('../util/chai');
-const truncateTables = require('../util/truncateTables');
+const {expect} = require('../../util/chai');
+const truncateTables = require('../../util/truncateTables');
 
-const models = require('../../src/DB/models');
-const db = require('../../src/DB')(config.database, models);
-const userService = require('../../src/Services/UserService')({db});
+const models = require('../../../src/DB/models');
+const db = require('../../../src/DB')(config.database, models);
+const userService = require('../../../src/Services/UserService')({db});
 
 const sampleUsers = [
   {name: 'Rachel', surname: 'Green'},
   {name: 'Monica', surname: 'Geller'},
   {name: 'Phoebe', surname: 'Buffay'},
-  {name: 'Joey', surname: 'Tribbiani'},
+  {name: 'Joseph', surname: 'Tribbiani', githubId: 3244, githubLogin: 'Joey'},
   {name: 'Chandler', surname: 'Bing'},
   {name: 'Ross', surname: 'Geller'}
 ];
@@ -27,7 +27,7 @@ describe('UserService', function () {
     }
   });
 
-  after(function() {
+  after(function () {
     db.sequelize.close();
   });
 
@@ -53,7 +53,7 @@ describe('UserService', function () {
           {id: 1, name: 'Rachel', surname: 'Green'},
           {id: 2, name: 'Monica', surname: 'Geller'},
           {id: 3, name: 'Phoebe', surname: 'Buffay'},
-          {id: 4, name: 'Joey', surname: 'Tribbiani'},
+          {id: 4, name: 'Joseph', surname: 'Tribbiani'},
           {id: 5, name: 'Chandler', surname: 'Bing'},
           {id: 6, name: 'Ross', surname: 'Geller'},
         ]
@@ -148,6 +148,40 @@ describe('UserService', function () {
 
       const user = await db.User.findOne({where: {id}});
       expect(user).to.be.null;
+    });
+
+  });
+
+  describe('getByGithubId', function () {
+
+    it('should return a user by its Github id', async function () {
+      const user = await userService.getByGithubId(3244);
+
+      expect(user).to.be.shallowDeepEqual(sampleUsers[3]);
+    });
+
+  });
+
+
+  describe('createGithubUser', function () {
+
+    it('should create a default user with github data', async function () {
+      const userData = {
+        login: 'harry',
+        id: 933257,
+        name: 'Harry Belafonte'
+      };
+
+      await userService.createGithubUser(userData);
+
+      const user = await db.User.findOne({where: {githubId: 933257}});
+      expect(user).to.be.shallowDeepEqual({
+        name: 'User',
+        surname: 'Harry Belafonte',
+        isAdmin: false,
+        githubId: 933257,
+        githubLogin: 'harry'
+      });
     });
 
   });

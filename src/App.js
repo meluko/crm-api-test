@@ -1,11 +1,17 @@
 'use strict';
 
-const express = require('express');
-const bodyParser = require('body-parser');
+module.exports = function ({middlewares, routes, views, lib}) {
+  const app = lib.express();
+  app.set('trust proxy', true);
 
-module.exports = function(routes) {
-  const app = express();
-  app.use(bodyParser.json());
+  app.use('/api/v1', middlewares.validateToken);
+  app.use('/api/v1/user', middlewares.adminAccess);
+  app.use(middlewares.jsonBodyParser);
+
+  app.engine('html', views);
+  app.set('views', lib.path.join(__dirname,'Views/templates'));
+  app.set('view engine', 'html');
+
   routes(app);
 
   return app;

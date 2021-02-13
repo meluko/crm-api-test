@@ -7,10 +7,13 @@ const BuildApp = require('../util/BuildApp');
 const UserController = require('../../src/Controllers/UserController');
 const UserRoutes = require('../../src/Routes/user');
 
-const services = {userService: {}};
+const services = {
+  userService: {},
+  authService: {}
+};
 const controllers = {userController: UserController({services})};
 
-const app = BuildApp(services, controllers, UserRoutes);
+const app = BuildApp({services, controllers, routes: UserRoutes});
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
@@ -28,6 +31,12 @@ const userList = [
 
 describe('User endpoints', function () {
 
+  beforeEach(function() {
+    services.authService.isValidToken = () => true;
+    services.authService.isAdminToken = () => true;
+    services.authService.tokenHasRoles = token => ADMIN_TOKEN === token;
+  });
+
   describe('GET ​/api​/v1​/user​/{userId}', function () {
 
     it('Should return 401 if client is not authenticated', function (done) {
@@ -37,6 +46,7 @@ describe('User endpoints', function () {
     });
 
     it('should return 403 if client is not and admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -75,6 +85,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .put('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -127,6 +138,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       const userId = 1;
       request(app)
         .delete(`/api/v1/user/${userId}`)
@@ -167,6 +179,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -199,6 +212,7 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not and admin user', function (done) {
+      services.authService.isAdminToken = () => false;
       request(app)
         .post('/api/v1/user')
         .set('Authorization', `Bearer ${USER_TOKEN}`)

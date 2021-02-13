@@ -11,5 +11,10 @@
     "username": "crm_api_user",
     "password": "crm_api_user_password"
   },
-  "uploadsPath": "./uploads"
+  "uploadsPath": "./uploads",
+  "auth": {
+    "authRequired": true,
+    "auth0Logout": true,
+    "audience": "https://crm-api-test/api"
+  }
 }

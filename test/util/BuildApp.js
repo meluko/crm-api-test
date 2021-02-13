@@ -1,9 +1,18 @@
 'use strict';
 
-module.exports = function(services, controllers, routes) {
-  const App = require('../../src/App');
-  const middlewares = require('../../src/middlewares');
-  const schemas = require('../../src/schemas');
+const config = require('config');
+const App = require('../../src/App');
+const Lib = require('../../src/Lib');
+const Middlewares = require('../../src/Middlewares');
+const schemas = require('../../src/schemas');
 
-  return App(routes({middlewares, controllers, schemas}));
+module.exports = function({routes, ...dependencies}) {
+  dependencies.config = config;
+  dependencies.lib = Lib(dependencies);
+  dependencies.middlewares = Middlewares(dependencies);
+  dependencies.schemas = schemas;
+  dependencies.routes = routes(dependencies);
+
+  const views = it => it;
+  return App({schemas, views, ...dependencies});
 };

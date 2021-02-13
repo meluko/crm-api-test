@@ -1,9 +1,11 @@
 'use strict';
 
+const {migrationFields} = require('../models/AuditoryFields');
 const tableName = 'imageMeta';
 
 module.exports = {
-  up: (queryInterface, { DataTypes }) => {
+  up: (queryInterface, { DataTypes, literal }) => {
+    const auditoryFields = migrationFields(literal, DataTypes);
     return queryInterface.createTable(tableName, {
       id: {
         type: DataTypes.INTEGER,
@@ -13,8 +15,9 @@ module.exports = {
       path: {
         type: DataTypes.STRING,
         allowNull: false
-      }
-    }, { timestamps: false });
+      },
+      ...auditoryFields
+    });
   },
 
   down: queryInterface => {

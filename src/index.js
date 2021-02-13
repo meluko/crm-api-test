@@ -1,20 +1,24 @@
 'use strict';
 
-module.exports = function(config) {
-  const App = require('./App');
-  const Routes = require('./Routes');
-  const schemas = require('./schemas');
-  const middlewares = require('./middlewares');
-  const Controllers = require('./Controllers');
-  const DB = require('./DB');
-  const models = require('./DB/models');
-  const Services = require('./Services');
+const App = require('./App');
+const Routes = require('./Routes');
+const schemas = require('./schemas');
+const Middlewares = require('./Middlewares');
+const Controllers = require('./Controllers');
+const DB = require('./DB');
+const models = require('./DB/models');
+const Services = require('./Services');
+const Views = require('./Views');
 
-  const db = DB(config.database, models);
-  const services = Services({db, config});
-  const controllers = Controllers({services});
-  const routes = Routes({middlewares, controllers, schemas});
+module.exports = function (dependencies) {
+  const db = DB(dependencies.config.database, models);
+  const views = Views(dependencies);
+  const services = Services({db, ...dependencies});
+  const middlewares = Middlewares({services, ...dependencies});
+  const controllers = Controllers({services, views, ...dependencies});
+  const routes = Routes({middlewares, controllers, schemas, ...dependencies});
 
-  return App(routes);
+  const app = App({middlewares, routes, ...dependencies, views});
+
+  return app;
 };
-
