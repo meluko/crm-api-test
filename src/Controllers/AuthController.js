@@ -7,7 +7,7 @@ module.exports = function (dependencies) {
     userService,
     authService
   } = dependencies.services;
-  const {github: {client_id}} = dependencies.config;
+  const {github: {clientId}} = dependencies.config;
   const {
     uuid,
     queryString
@@ -19,9 +19,9 @@ module.exports = function (dependencies) {
 
   const login = function (req, res) {
     const query = {
-      client_id,
+      client_id: clientId,
       redirect_uri: `${buildBaseUrl(req)}/auth/callback`,
-      state: uuid()
+      state: uuid.v4()
     };
 
     res.redirect(302, `${GITHUB_AUTHORIZE}?${queryString.stringify(query)}`);

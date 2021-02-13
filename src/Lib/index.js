@@ -10,7 +10,7 @@ const https = require('https');
 const multer = require('multer');
 const path = require('path');
 const queryString = require('query-string');
-const {uuid} = require('uuidv4');
+const uuid = require('uuid');
 
 const GithubClient = require('./GithubClient');
 

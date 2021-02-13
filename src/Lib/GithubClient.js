@@ -18,7 +18,7 @@ module.exports = function (dependencies) {
     const query = {
       client_id: clientId,
       client_secret: clientSecret,
-      redirect_uri: '/',
+      redirect_uri: '',
       code,
       state
     };

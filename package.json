@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "eslint . && nyc --reporter=text mocha --recursive test",
+    "start": "node index.js",
     "sequelize": "sequelize"
   },
   "repository": {
@@ -48,11 +49,14 @@
     "mysql2": "^2.2.5",
     "query-string": "^6.14.0",
     "sequelize": "^6.5.0",
-    "uuidv4": "^6.2.6"
+    "uuid": "^8.3.2"
   },
   "nyc": {
     "instrumentation": {
-      "excludes": ["**/node_modules/**", "src/Lib/GithubClient.js"]
+      "excludes": [
+        "**/node_modules/**",
+        "src/Lib/GithubClient.js"
+      ]
     }
   }
 }
