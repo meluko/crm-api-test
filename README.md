@@ -96,7 +96,7 @@ Github's login process. Follow the steps and you will be redirected back to loca
 Use the provided token as an http header:
 
 ```
-  Authorization: Bearer 4b97c76ea72893b605c827f6b4ffa66019b8b4f2  
+  Authorization: Bearer <access_token>  
 ```
 
 After each login process a token is stored in the database and, if it is the firs time this user logs in, a user will
