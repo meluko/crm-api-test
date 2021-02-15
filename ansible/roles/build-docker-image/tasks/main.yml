@@ -1,0 +1,53 @@
+---
+- set_fact: root_directory={{ lookup('env','PWD') }}
+
+- name: make sure python-docker is installed
+  pip:
+    name: docker
+
+- name: Login to ECR
+  shell:
+    $(aws ecr get-login --no-include-email --region {{ AWS_REGION }})
+
+- name: Build image and push latest tag to repo
+  docker_image:
+    build:
+      path: "{{ root_directory }}"
+      dockerfile: "{{ DOCKERFILE }}"
+      pull: no
+    name: "{{ REPO }}:latest"
+    source: build
+    push: yes
+
+- name: Tag version and push
+  docker_image:
+    name: "{{ REPO }}:latest"
+    repository: "{{ REPO }}:{{ VERSION_TAG }}"
+    push: yes
+    source: local
+
+- name: Tag build number and push
+  docker_image:
+    name: "{{ REPO }}:latest"
+    repository: "{{ REPO }}:{{ BUILD_TAG }}"
+    push: yes
+    source: local
+
+- name: Logout from ECR
+  shell:
+    docker logout {{ REPO }}
+
+- name: delete
+  docker_image:
+    state: absent
+    name: "{{ REPO }}:latest"
+
+- name: delete
+  docker_image:
+    state: absent
+    name: "{{ REPO }}:{{ VERSION_TAG }}"
+
+- name: delete
+  docker_image:
+    state: absent
+    name: "{{ REPO }}:{{ BUILD_TAG }}"
