@@ -1,0 +1,20 @@
+{
+  "server": {
+    "port": "8088",
+    "keyPath": "keys/localhost.key",
+    "certPath": "keys/localhost.crt"
+  },
+  "database": {
+    "dialect": "mysql",
+    "env": "development",
+    "host": "localhost",
+    "port": "3306",
+    "database": "crm_api_test",
+    "username": "crm_api_user",
+    "password": "crm_api_user_password"
+  },
+  "uploadsPath": "./uploads",
+  "auth": {
+    "tokenTTL": 86400000
+  }
+}

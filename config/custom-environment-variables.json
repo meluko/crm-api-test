@@ -1,10 +1,7 @@
 {
   "auth": {
-    "issuerBaseURL": "ISSUER_BASE_URL",
-    "baseURL": "BASE_URL",
     "clientID": "CLIENT_ID",
-    "clientSecret": "CLIENT_SECRET",
-    "secret": "SECRET"
+    "clientSecret": "CLIENT_SECRET"
   }
 }
 

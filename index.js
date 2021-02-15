@@ -4,9 +4,15 @@ const {server, ...config} = require('config');
 const lib = require('./src/Lib')({config});
 const app = require('./src')({config, lib});
 
-const key =  lib.fs.readFileSync(lib.path.resolve(__dirname, 'keys/key.pem'));
-const cert = lib.fs.readFileSync(lib.path.resolve(__dirname, 'keys/cert.pem'));
+const {
+  port,
+  keyPath,
+  certPath
+} = server;
 
-lib.https.createServer({key: key, cert: cert }, app).listen(server.port, () => {
-  console.info(`Server listening at https://localhost:${server.port}`);
+const key =  lib.fs.readFileSync(lib.path.resolve(__dirname, keyPath));
+const cert = lib.fs.readFileSync(lib.path.resolve(__dirname, certPath));
+
+lib.https.createServer({key: key, cert: cert }, app).listen(port, () => {
+  console.info(`Server listening at https://localhost:${port}`);
 });

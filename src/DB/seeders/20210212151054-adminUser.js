@@ -21,11 +21,11 @@ module.exports = {
       githubId: id,
       isAdmin: true
     };
-    const user = await queryInterface.rawSelect('User', {where: userData,}, ['id']);
+    const user = await queryInterface.rawSelect('User', {where: userData}, ['id']);
     if (!user) {
-      await queryInterface.insert('user', userData, {});
+      await queryInterface.bulkInsert('user', [userData], {});
     } else {
-      console.info(`User ${GITHUB_USER} already exists`)
+      console.info(`User ${GITHUB_USER} already exists`);
     }
   },
 

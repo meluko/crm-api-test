@@ -1,72 +1,107 @@
 
 # crm-api-test  
-### The Agile Monkeys CRM API Test
+## The Agile Monkeys CRM API Test
 - [Brief description](#brief-description) 
-- [API setup](#api-setup) 
+- [Setup development environment](#setup-development-environment) 
+  * [Generate self-signed certificates](#generate-self-signed-certificates)
+  * [Running mysql](#running-mysql)
+  * [Creating a Github OAuth app](#creating-a-github-oauth-app)
+  * [Run migrations and seeds](#run-migrations-and-seeds)
+  * [Launch server](#launch-server)
 - [Testing](#testing)
+- [Authentication](#authentication)
 - [API endpoints](#api-endpoints)
   * [Customer](#customer)
   * [User](#user)
-  * [Image/Photo upload](#image-photo-upload)
+  * [Image/Photo upload](#imagephoto-upload)
   
-### API Setup
-In order to start your API service up, you will need some initial setup
-
-- Enable access to a mysql database so your service can reach it. There is a handy docker-compose file at `docker/composed-mysql.yml` have a local one with ease.
-```shell script
-    docker-compose -f docker/composed-mysql.yml up -d
-```
-
-- Create a database to be used by your service. Use a name of your choice
-~~~sql
-    CREATE DATABASE [YOUR_DB_NAME];
-~~~
-
-- Create a database user to be used by your API service and grant permissions over your new database.
-If you use the docker-compose approach your db config is as follows, otherwise, use the config values of your choice
-    * **root password**: rootpassword
-    * **database**: crm_api_test
-    * **user**: crm_api_user
-    * **password**: crm_api_user_password
-    
-~~~sql
-    docker exec -it mysql mysql -uroot -prootpassword
-    CREATE USER 'crm_api_user'@'localhost' IDENTIFIED BY 'crm_api_user_password';
-    GRANT ALL PRIVILEGES ON crm_api_user.* TO 'crm_api_test'@'localhost';
-~~~
-
-- Create a configuration file. Copy `config/production.json.dist` to `config/production.json`
-and customize it as needed.
-
-- Install all needed dependencies
-```shell script
-    npm i
-```
-
-- Setup database schema running migrations (this is needed whenever new migrations are added)
-```shell script
-    npm run sequelize db:migrate
-```
-
-- Run tests
-```shell script
-    npm test
-```
-
-### Brief description
+## Brief description
 
 Implementation of a customer management API. 
+
 (This document will be incrementally grow along with the project itself.)
 
-# Testing
-Launch tests with
+## Setup development environment
+To start using the api in development environment use the following steps.
+This project contains some files to help you start the development.
+Feel free use in your own way.
+
+### Generate self-signed certificates
+First, you will need keys to serve your api using http. This script
+ will create them if needed and place them in **keys** directory
 ```shell script
-npm test
+  dev/generate-keys.sh
 ```
 
-Tests directory structure:
+### Running mysql
+Although you can use any mysql server, there is a docker compose file
+to help you set up mysql in your local machine. To do so execute the next script:
 
-* **test/api-endpoints**: top-level api tests
+```shell script
+  docker-compose -f dev/composed-mysql.yml up -d
+```
+
+### Creating a Github OAuth app
+A ready to use Github OAuth app is needed. Follow <a href="https://docs.github.com/en/developers/apps/creating-an-oauth-app">this instructions</a> to create. Create an app client secret and use it along with client id to launch the api. (see below)
+
+### Run migrations and seeds 
+Once database is ready, a database schema is needed, as well as a first Admin user. 
+Use the next commands do both things
+Don't forget to provide your *github's account username* as an environment *GITHUB_USER* variable to do so. 
+
+```shell script
+  # Database migration
+  npm run sequelize db:migrate
+``` 
+
+```shell script
+  # Database seed
+  GITHUB_USER=<your-user> npm run sequelize db:seed:all
+``` 
+
+## Launch server
+Finally, you can start your server using Github OAuth api's credentials as environment variables:
+
+```shell script
+  CLIENT_ID=<YOUR_CLIENT_ID> CLIENT_SECRET=<YOUR_CLIENT_SECRET> npm run start
+```
+
+Alternatively but less recommended, you can create a **config/default.json** file to store client id and secret.
+
+```
+# config/default.json
+{
+  "github": {
+    "clientId": "YOUR_CLIENT_ID",
+    "clientSecret": "YOUR_CLIENT_SECRET"
+  }
+}
+```
+
+**Note**: You can overwrite all default values in this new config file, for example, database connection parameters.
+
+
+## Testing
+Launch test (including eslint and code coverage report) with the following command:
+**Warning**: Some tests use underlying database, so seeded admin user will be deleted.
+```shell script
+  npm run test
+```
+
+## Authentication
+To start using the api endpoints from an http client of your choice (web application, curl, postman...) you must be
+authenticated.
+With the server running, open your browser and go to **https://localhost:8088/auth/login** an you will be redirected to 
+Github's login process. Follow the steps and you will be redirected back to local server where a token will be shown.
+Use the provided token as an http header:
+
+```
+  Authorization: Bearer 4b97c76ea72893b605c827f6b4ffa66019b8b4f2  
+```
+
+After each login process a token is stored in the database and, if it is the firs time this user logs in, a user will
+be stored in the database with default data, using Github's available information.
+User data update must be performed by an admin user.
 
 ### Api endpoints
 

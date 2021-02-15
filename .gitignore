@@ -104,6 +104,6 @@ dist
 .tern-port
 
 config/local.json
-docker/mysql-data
+dev/mysql-data
 uploads
 keys
