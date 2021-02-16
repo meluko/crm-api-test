@@ -1,0 +1,10 @@
+---
+- name: Create security group {{ NAME }}
+  ec2_group:
+    region:  "{{ AWS_REGION }}"
+    vpc_id: "{{ VPC_ID }}"
+    name: "{{ NAME }}"
+    description: "{{ DESCRIPTION }}"
+    tags: "{{ TAGS }}"
+    rules: "{{ RULES | default(omit) }}"
+  register: last_created_sg

@@ -3,6 +3,6 @@
 module.exports = dependencies => {
   return {
     bindAuditHooks: require('./BindAuditHooks')(dependencies),
-    paginationFromQuery: require('./PaginationFromQuery')(dependencies)
+    paginationFromQuery: require('./paginationFromQuery')
   };
 };

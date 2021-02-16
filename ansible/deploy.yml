@@ -17,3 +17,23 @@
     BUILD_TAG: "build_{{ lookup('env', 'BUILD_NUMBER') }}"
     DOCKERFILE: "docker/Dockerfile"
 
+- name: Add instance to inventory group
+  hosts: localhost
+  roles:
+    - add-instance-to-inventory-group
+  vars:
+    NAME_TAG: "{{ lookup('env', 'NAME_TAG') }}"
+    AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
+    ANSIBLE_USER: ec2-user
+
+- name: Deploy composed container
+  hosts: added_hosts
+  roles:
+    - deploy-composed-containers
+  vars:
+    AWS_ACCOUNT_ID: "{{ lookup('env', 'AWS_ACCOUNT_ID') }}"
+    AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
+    ECR_REPOSITORY: crm_api_test
+    REPO: "{{ AWS_ACCOUNT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/{{ ECR_REPOSITORY }}"
+    CLIENT_ID: "{{ lookup('env', 'CLIENT_ID') }}"
+    CLIENT_SECRET: "{{ lookup('env', 'CLIENT_SECRET') }}"

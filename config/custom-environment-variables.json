@@ -1,5 +1,5 @@
 {
-  "auth": {
+  "github": {
     "clientID": "CLIENT_ID",
     "clientSecret": "CLIENT_SECRET"
   }

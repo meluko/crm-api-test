@@ -7,13 +7,15 @@ module.exports = function (dependencies) {
   const {
     bodyParser,
     expressJoi,
-    httpContext
+    httpContext,
+    expressBunyanLogger
   } = dependencies.lib;
   return {
     jsonBodyParser: bodyParser.json(),
     schemaValidator: expressJoi.createValidator(),
     httpContext: httpContext.middleware,
     validateToken: ValidateToken(dependencies),
-    adminAccess: AdminAccess(dependencies)
+    adminAccess: AdminAccess(dependencies),
+    expressBunyanLogger: expressBunyanLogger()
   };
 };

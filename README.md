@@ -26,13 +26,6 @@ To start using the api in development environment use the following steps.
 This project contains some files to help you start the development.
 Feel free use in your own way.
 
-### Generate self-signed certificates
-First, you will need keys to serve your api using http. This script
- will create them if needed and place them in **keys** directory
-```shell script
-  dev/generate-keys.sh
-```
-
 ### Running mysql
 Although you can use any mysql server, there is a docker compose file
 to help you set up mysql in your local machine. To do so execute the next script:
@@ -79,7 +72,6 @@ Alternatively but less recommended, you can create a **config/default.json** fil
 ```
 
 **Note**: You can overwrite all default values in this new config file, for example, database connection parameters.
-
 
 ## Testing
 Launch test (including eslint and code coverage report) with the following command:

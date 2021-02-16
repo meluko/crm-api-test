@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 const GITHUB_ACCESS_TOKEN = 'https://github.com/login/oauth/access_token';
 const GITHUB_USER = 'https://api.github.com/user';
 

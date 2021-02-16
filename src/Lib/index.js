@@ -4,6 +4,7 @@ const _ = require('lodash');
 const axios = require('axios').default;
 const bodyParser = require('body-parser');
 const express = require('express');
+const expressBunyanLogger = require('express-bunyan-logger');
 const expressJoi = require('express-joi-validation');
 const fs = require('fs');
 const httpContext = require('express-http-context');
@@ -21,6 +22,7 @@ module.exports = function (dependencies) {
     axios,
     bodyParser,
     express,
+    expressBunyanLogger,
     expressJoi,
     fs,
     https,

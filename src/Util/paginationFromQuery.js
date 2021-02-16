@@ -7,7 +7,7 @@ const trim = it => it.trim();
 const identity = it => it;
 const split = it => it.split(':').map(trim);
 
-module.exports = () => (query = {}) => {
+module.exports = (query = {}) => {
   let {offset, limit, order} = query;
   offset = parseInt(offset) || DEFAULT_OFFSET;
   limit = parseInt(limit) || DEFAULT_LIMIT;

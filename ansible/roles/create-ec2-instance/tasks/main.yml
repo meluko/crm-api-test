@@ -1,0 +1,40 @@
+---
+- name: Check if EC2 instance already exists
+  ec2_instance_facts:
+    filters:
+      "tag:Name": "{{ NAME_TAG }}"
+      instance-state-name: [ "running" ]
+    region: "{{ AWS_REGION }}"
+  register: ec2_instances
+
+- set_fact: instance_running={{ ec2_instances.instances | length > 0 }}
+- set_fact: key_name={{ KEY_NAME | default(DEFAULT_KEY_NAME, true) }}
+
+- name: Create EC2 instance if needed. Using key {{ key_name }}
+  ec2:
+    region: "{{ AWS_REGION }}"
+    vpc_subnet_id: "{{ VPC_SUBNET_ID }}"
+    key_name: "{{ key_name }}"
+    instance_type: "{{ INSTANCE_TYPE }}"
+    image: "{{ IMAGE }}"
+    wait: yes
+    group: "{{ SECURITY_GROUP_NAMES }}"
+    instance_profile_name: "{{ IAM_ROLE_NAME }}"
+    count: 1
+    volumes:
+      - device_name: /dev/xvda
+        volume_type: gp2
+        volume_size: 8
+        delete_on_termination: true
+    instance_tags: "{{ INSTANCE_TAGS }}"
+    termination_protection: true
+  register: ec2
+  when: not instance_running
+
+- name: Wait until EC2 instance ssh is available
+  wait_for:
+    port: 22
+    host: '{{ ec2.instances[0].public_ip }}'
+    search_regex: OpenSSH
+    delay: 10
+  when: not instance_running

@@ -8,6 +8,7 @@ module.exports = function ({middlewares, routes, views, lib}) {
   app.use('/api/v1', middlewares.validateToken);
   app.use('/api/v1/user', middlewares.adminAccess);
   app.use(middlewares.jsonBodyParser);
+  app.use(middlewares.expressBunyanLogger);
 
   app.engine('html', views);
   app.set('views', lib.path.join(__dirname,'Views/templates'));

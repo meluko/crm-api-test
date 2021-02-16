@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=crm_api_test
+      - MYSQL_USER=crm_api_user
+      - MYSQL_PASSWORD=crm_api_user_password
+
+  api:
+    image: {{ REPO }}:latest
+    container_name: api
+    ports:
+      - 8088:8088
+    volumes:
+      - ./config:/worker/config
+      - ./uploads:/worker/uploads
+      - ./keys:/worker/keys
+    restart: always
+    environment:
+      - CLIENT_ID={{ CLIENT_ID }}
+      - CLIENT_SECRET={{ CLIENT_SECRET }}

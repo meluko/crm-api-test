@@ -1,0 +1,16 @@
+---
+- name: Allocate swap file
+  shell: fallocate -l {{ SWAP_SIZE }} /swapfile || true
+  become: true
+
+- name: Set swapfile permissions
+  shell: chmod 600 /swapfile
+  become: true
+
+- name: Setup linux swap area
+  shell: mkswap /swapfile || true
+  become: true
+
+- name: Enable swap
+  shell: swapon /swapfile || true
+  become: true
