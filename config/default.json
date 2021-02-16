@@ -1,8 +1,6 @@
 {
   "server": {
-    "port": "8088",
-    "keyPath": "keys/localhost.key",
-    "certPath": "keys/localhost.crt"
+    "port": "8088"
   },
   "database": {
     "dialect": "mysql",

@@ -1,0 +1,4 @@
+REGION: eu-west-1
+DEFAULT_KEY_NAME: meluko@2021
+INSTANCE_TAGS:
+  Name: "{{ NAME_TAG }}"

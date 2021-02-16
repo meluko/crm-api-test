@@ -1,6 +1,6 @@
 'use strict';
 
-const paginationFromQuery = require('../util/paginationFromQuery');
+const paginationFromQuery = require('../Util/paginationFromQuery');
 
 module.exports = function ({db}) {
   const {User} = db;

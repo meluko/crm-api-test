@@ -1,0 +1,22 @@
+---
+- name: Retrieve running instances matching Name tag '{{ NAME_TAG }}'
+  ec2_instance_facts:
+    filters:
+      "tag:Name": "{{ NAME_TAG }}"
+      instance-state-name: [ "running" ]
+    region: "{{ AWS_REGION }}"
+  register: ec2_instances
+
+- name: Check instance named {{ NAME_TAG }} was found
+  fail:
+    msg: No instance named {{ NAME_TAG }} found
+  when: ec2_instances.instances == ""
+
+- name: Add hosts to group 'added_hosts'
+  add_host:
+    groups: added_hosts
+    ansible_user: "{{ ANSIBLE_USER }}"
+    name: "{{ item.public_ip_address }}"
+  with_items: "{{ ec2_instances.instances }}"
+  loop_control:
+    label: "{{ item.public_ip_address }}"

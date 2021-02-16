@@ -1,0 +1,7 @@
+---
+- name: Create IAM Managed Policy for ECR access
+  iam_managed_policy:
+    policy_name: "pdcw_ecr_allow_pull_images"
+    policy_description: "Allow to pull images from ECR"
+    policy: "{{ lookup('file', 'managed_ecr_policy.json') }}"
+    state: present

@@ -1,0 +1,40 @@
+---
+- name: Create config directory
+  file:
+    path: ~/config
+    state: directory
+    mode: '0755'
+
+- name: Copy config file (using development file)
+  copy:
+    src: "{{ role_path }}/../../../config/default.json"
+    dest: ~/config/local.json
+    owner: ec2-user
+    group: docker
+    mode: '0644'
+
+- name: Copy custom-environment-variables.json file
+  copy:
+    src: "{{ role_path }}/../../../config/custom-environment-variables.json"
+    dest: ~/config/custom-environment-variables.json
+    owner: ec2-user
+    group: docker
+    mode: '0644'
+
+- name: Copy docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: ~/docker-compose.yml
+    owner: ec2-user
+    group: docker
+
+- name: Login to ECR
+  shell:
+    $(aws ecr get-login --no-include-email --region {{ AWS_REGION }})
+
+- name: Start composed containers
+  shell: docker-compose -f ~/docker-compose.yml up --force-recreate -d
+
+- name: remove orphan images
+  shell:
+    docker image prune -f

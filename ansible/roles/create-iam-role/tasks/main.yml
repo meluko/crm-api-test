@@ -1,0 +1,7 @@
+---
+- name: Create a role with given parameters
+  iam_role:
+    name: "{{ ROLE_NAME }}"
+    description: "{{ ROLE_DESCRIPTION }}"
+    assume_role_policy_document: "{{ lookup('file','policy.json') }}"
+    managed_policy: "{{ MANAGED_POLICIES }}"
