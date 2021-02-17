@@ -1,0 +1,29 @@
+---
+- name: Get availability zones
+  aws_az_facts:
+    region: "{{ AWS_REGION }}"
+  register: availablity_zones
+
+- set_fact: availablity_zones={{ availablity_zones.availability_zones | map(attribute='zone_name') | list }}
+
+- name: Check if EC2 instance already exists
+  ec2_instance_facts:
+    filters:
+      "tag:Name": "{{ NAME_TAG }}"
+      instance-state-name: [ "running" ]
+    region: "{{ AWS_REGION }}"
+  register: ec2_instances
+  when: NAME_TAG is defined
+
+- set_fact: instance_ids={{ ec2_instances.instances | map(attribute='instance_id') | list }}
+
+- name: Create load balancer
+  ec2_elb_lb:
+    region: "{{ AWS_REGION }}"
+    name: "{{ NAME }}"
+    state: present
+    zones: "{{ availablity_zones }}"
+    health_check: "{{ HEALTH_CHECK }}"
+    listeners: "{{ LISTENERS }}"
+    security_group_names: "{{ SECURITY_GROUP_NAMES }}"
+    instance_ids: "{{ instance_ids }}"

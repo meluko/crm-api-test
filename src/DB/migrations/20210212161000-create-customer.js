@@ -1,6 +1,6 @@
 'use strict';
 
-const {migrationFields} = require('../models/AuditoryFields');
+const {migrationFields} = require('../models/auditoryFields');
 const tableName = 'customer';
 
 module.exports = {

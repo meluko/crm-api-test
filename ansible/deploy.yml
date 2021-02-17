@@ -37,3 +37,10 @@
     REPO: "{{ AWS_ACCOUNT_ID }}.dkr.ecr.{{ AWS_REGION }}.amazonaws.com/{{ ECR_REPOSITORY }}"
     CLIENT_ID: "{{ lookup('env', 'CLIENT_ID') }}"
     CLIENT_SECRET: "{{ lookup('env', 'CLIENT_SECRET') }}"
+
+- name: Launch migrations and seeds
+  hosts: added_hosts
+  roles:
+    - launch-migrations
+  vars:
+    GITHUB_USER: "{{ lookup('env', 'GITHUB_USER') }}"

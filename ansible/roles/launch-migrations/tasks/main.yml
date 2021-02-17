@@ -1,0 +1,12 @@
+---
+- name: Sleep for 30 seconds to make sure database is ready
+  wait_for:
+    timeout: 30
+  delegate_to: localhost
+
+- name: launch migrations
+  shell: docker exec -it api npm run sequelize db:migrate
+
+- name: launch seeds
+  shell: docker exec -e GITHUB_USER={{GITHUB_USER}} -it api npm run sequelize db:seed:all
+

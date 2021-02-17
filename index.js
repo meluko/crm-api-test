@@ -9,5 +9,5 @@ const {
 } = server;
 
 app.listen(port, () => {
-  console.info(`Server listening at https://localhost:${port}`);
+  console.info(`Server listening at http://localhost:${port}`);
 });

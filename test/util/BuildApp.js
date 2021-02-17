@@ -8,7 +8,9 @@ const schemas = require('../../src/schemas');
 
 module.exports = function({routes, ...dependencies}) {
   dependencies.config = config;
+
   dependencies.lib = Lib(dependencies);
+  dependencies.lib.expressBunyanLogger = () => (req, res, next) => next();
   dependencies.middlewares = Middlewares(dependencies);
   dependencies.schemas = schemas;
   dependencies.routes = routes(dependencies);

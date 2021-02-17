@@ -14,7 +14,6 @@ module.exports = function (dependencies) {
     const accessToken = await authService.get(token);
     if (!accessToken || !authService.isValidToken(accessToken)) {
       return res.sendStatus(401);
-      //res.redirect(302, '/auth/login');
     }
 
     httpContext.set('accessToken', accessToken);
