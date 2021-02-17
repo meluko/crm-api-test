@@ -18,7 +18,7 @@ pipeline {
 
         string(
             name: 'GITHUB_USER',
-            description: 'Github user to seed the first admin user'
+            description: 'Github user to seed the first admin user',
             defaultValue: 'meluko'
         )
 

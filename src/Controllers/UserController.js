@@ -5,12 +5,12 @@ module.exports = function(dependencies) {
 
   const list = async function (req, res) {
     const users = await userService.find(req.query);
-    res.status(200).json(users);
+    res.render('UserListPresenter.js', users);
   };
 
   const create = async function (req, res) {
     const user = await userService.create(req.body);
-    res.status(200).json(user);
+    res.render('UserPresenter.js', user);
   };
 
   const get = async function (req, res) {
@@ -19,7 +19,7 @@ module.exports = function(dependencies) {
     if (!user) {
       return res.status(404).send('Not Found');
     }
-    res.status(200).json(user);
+    res.render('UserPresenter.js', user);
   };
 
   const update = async function (req, res) {
@@ -29,7 +29,7 @@ module.exports = function(dependencies) {
       return res.status(404).send('Not Found');
     }
     const updatedUser = await userService.update(user, req.body);
-    res.status(200).json(updatedUser);
+    res.render('UserPresenter.js', updatedUser);
   };
 
   const remove = async function (req, res) {
