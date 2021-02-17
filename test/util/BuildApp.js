@@ -4,6 +4,7 @@ const config = require('config');
 const App = require('../../src/App');
 const Lib = require('../../src/Lib');
 const Middlewares = require('../../src/Middlewares');
+const Presenters = require('../../src/Presenters');
 const schemas = require('../../src/schemas');
 
 module.exports = function({routes, ...dependencies}) {
@@ -14,7 +15,7 @@ module.exports = function({routes, ...dependencies}) {
   dependencies.middlewares = Middlewares(dependencies);
   dependencies.schemas = schemas;
   dependencies.routes = routes(dependencies);
+  dependencies.presenters = Presenters(dependencies);
 
-  const views = it => it;
-  return App({schemas, views, ...dependencies});
+  return App({schemas, ...dependencies});
 };

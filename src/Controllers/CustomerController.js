@@ -8,7 +8,7 @@ module.exports = function(dependencies) {
 
   const list = async function (req, res) {
     const customers = await customerService.find(req.query);
-    res.status(200).json(customers);
+    res.render('CustomerListPresenter.js', customers);
   };
 
   const create = async function (req, res) {
@@ -20,7 +20,7 @@ module.exports = function(dependencies) {
       }
     }
     const customer = await customerService.create(req.body);
-    res.status(200).json(customer);
+    res.render('CustomerPresenter.js', customer);
   };
 
   const get = async function (req, res) {
@@ -29,7 +29,7 @@ module.exports = function(dependencies) {
     if (!customer) {
       return res.status(404).send('Not Found');
     }
-    res.status(200).json(customer);
+    res.render('CustomerPresenter.js', customer);
   };
 
   const update = async function (req, res) {
@@ -47,7 +47,7 @@ module.exports = function(dependencies) {
       return res.status(404).send('Not Found');
     }
     const updatedcustomer = await customerService.update(customer, req.body);
-    res.status(200).json(updatedcustomer);
+    res.render('CustomerPresenter.js', updatedcustomer);
   };
 
   const remove = async function (req, res) {

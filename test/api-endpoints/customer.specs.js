@@ -1,41 +1,57 @@
 'use strict';
 
-const {expect} = require('chai');
-const sinon = require('sinon');
+const {expect} = require('../util/chai');
 const request = require('supertest');
-const BuildApp = require('../util/BuildApp');
-const CustomerController = require('../../src/Controllers/CustomerController');
-const CustomerRoutes = require('../../src/Routes/customer');
 
-const services = {
-  customerService: {},
-  imageMetaService: {},
-  authService: {}
-};
-const controllers = {customerController: CustomerController({services})};
+const config = require('config');
+const truncateTables = require('../util/truncateTables');
+const Lib = require('../../src/Lib');
+const lib = Lib({config});
+const {
+  buildAppDependencies,
+  buildApp
+} = require('../../src');
 
-const app = BuildApp({services, controllers, routes: CustomerRoutes});
+const appDependencies = buildAppDependencies({config, lib});
+const app = buildApp(appDependencies);
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
 
-const customer = {
-  id: 1,
-  name: 'John',
-  surname: 'Doe'
-};
-
-const customerList = [
-  {id: 1, name: 'John', surname: 'Doe'},
-  {id: 2, name: 'Jane', surname: 'Doe'}
+const sampleCustomers = [
+  {name: 'Chico', surname: 'Marx'},
+  {name: 'Gummo', surname: 'Marx'},
+  {name: 'Harpo', surname: 'Marx'},
+  {name: 'Groucho', surname: 'Marx'},
+  {name: 'Zeppo', surname: 'Marx'}
 ];
+
+const createToken = async function (token) {
+  const userData = {
+    name: `name_${token}`,
+    surname: `surname_${token}`
+  };
+  const user = await appDependencies.services.userService.create(userData);
+  const accessTokenData = {
+    id: user.id,
+    githubId: 0
+  };
+  await appDependencies.services.authService.create(token, accessTokenData);
+};
 
 describe('Customer endpoints', function () {
 
-  before(function() {
-    services.authService.get = () => 'token';
-    services.authService.isValidToken = () => true;
-    services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
+  before(async function () {
+    await createToken(USER_TOKEN);
+    await createToken(ADMIN_TOKEN);
+  });
+
+  beforeEach(async function () {
+    await truncateTables(appDependencies.db)(['customer']);
+
+    for (let customer of sampleCustomers) {
+      await appDependencies.db.Customer.create(customer);
+    }
   });
 
   describe('GET /api/v1/customer/{customerId}', function () {
@@ -48,33 +64,30 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 404 if customer is not found', function (done) {
-      services.customerService.get = () => null;
       request(app)
-        .get('/api/v1/customer/1')
+        .get('/api/v1/customer/100')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return 200 with customer data', function (done) {
-      services.customerService.get = () => customer;
       request(app)
         .get('/api/v1/customer/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect('Content-Type', 'application/json')
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(customer);
+          expect(res.body).to.be.shallowDeepEqual(sampleCustomers[0]);
           done();
         });
     });
 
     it('Should allow admin user to get customer data', function (done) {
-      services.customerService.get = () => customer;
       request(app)
         .get('/api/v1/customer/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect('Content-Type', 'application/json')
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(customer);
+          expect(res.body).to.be.shallowDeepEqual(sampleCustomers[0]);
           done();
         });
     });
@@ -84,11 +97,9 @@ describe('Customer endpoints', function () {
   describe('PUT /api/v1/customer/{customerId}', function () {
 
     it('Should return 400 if referenced imageMeta is not found', function (done) {
-      services.imageMetaService.get = () => null;
-      const customerId = 2771;
       const requestBody = {name: 'John', surname: 'Doe', imageMetaId: 99};
       request(app)
-        .put(`/api/v1/customer/${customerId}`)
+        .put(`/api/v1/customer/1`)
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .send(requestBody)
         .set('Accept', 'application/json')
@@ -108,9 +119,8 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 404 if customer is not found', function (done) {
-      services.customerService.get = () => null;
       request(app)
-        .put('/api/v1/customer/1')
+        .put('/api/v1/customer/100')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .send({name: 'John', surname: 'Doe'})
         .set('Accept', 'application/json')
@@ -118,34 +128,27 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 200 if customer is successfully updated', function (done) {
-      services.customerService.get = () => customer;
-      services.customerService.update = sinon.stub().returns(customer);
-      const customerId = 2771;
       const requestBody = {name: 'John', surname: 'Doe'};
       request(app)
-        .put(`/api/v1/customer/${customerId}`)
+        .put(`/api/v1/customer/1`)
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .send(requestBody)
         .set('Accept', 'application/json')
         .expect(202, (err, res) => {
-          expect(res.body).to.be.deep.equal(customer);
-          expect(services.customerService.update.callCount).to.be.equal(1);
-          expect(services.customerService.update.getCall(0).args[0]).to.be.equal(customer);
-          expect(services.customerService.update.getCall(0).args[1]).to.be.deep.equal(requestBody);
+          expect(res.body).to.be.shallowDeepEqual(requestBody);
           done();
         });
     });
 
     it('Should allow admin user to update customer', function (done) {
-
-      services.customerService.get = () => customer;
+      const requestBody = {name: 'John', surname: 'Doe'};
       request(app)
         .put('/api/v1/customer/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .send({name: 'John', surname: 'Doe'})
+        .send(requestBody)
         .set('Accept', 'application/json')
         .expect(202, (err, res) => {
-          expect(res.body).to.be.deep.equal(customer);
+          expect(res.body).to.be.shallowDeepEqual(requestBody);
           done();
         });
     });
@@ -162,39 +165,24 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 404 if customer is not found', function (done) {
-      services.customerService.get = () => null;
       request(app)
-        .delete('/api/v1/customer/1')
+        .delete('/api/v1/customer/100')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return 200 if customer is successfully delete', function (done) {
-      services.customerService.get = () => customer;
-      services.customerService.destroy = sinon.stub();
-      const customerId = 2771;
       request(app)
-        .delete(`/api/v1/customer/${customerId}`)
+        .delete(`/api/v1/customer/1`)
         .set('Authorization', `Bearer ${USER_TOKEN}`)
-        .expect(200, () => {
-          expect(services.customerService.destroy.callCount).to.be.deep.equal(1);
-          expect(services.customerService.destroy.getCall(0).args[0]).to.be.deep.equal(customerId);
-          done();
-        });
+        .expect(200, done);
     });
 
     it('Should allow admin user to delete customer', function (done) {
-      services.customerService.get = () => customer;
-      services.customerService.destroy = sinon.stub();
-      const customerId = 2771;
       request(app)
-        .delete(`/api/v1/customer/${customerId}`)
+        .delete(`/api/v1/customer/1`)
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .expect(200, () => {
-          expect(services.customerService.destroy.callCount).to.be.deep.equal(1);
-          expect(services.customerService.destroy.getCall(0).args[0]).to.be.deep.equal(customerId);
-          done();
-        });
+        .expect(200, done);
     });
 
   });
@@ -208,34 +196,26 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 200 with the list of stored customers', function (done) {
-      services.customerService.find = () => ({
-        count: customerList.length,
-        rows: customerList
-      });
       request(app)
         .get('/api/v1/customer')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal({
-            count: 2,
-            rows: customerList
+          expect(res.body).to.be.shallowDeepEqual({
+            count: 5,
+            rows: sampleCustomers
           });
           done();
         });
     });
 
     it('Should allow admin user to list stored customers', function (done) {
-      services.customerService.find = () => ({
-        count: customerList.length,
-        rows: customerList
-      });
       request(app)
         .get('/api/v1/customer')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal({
-            count: 2,
-            rows: customerList
+          expect(res.body).to.be.shallowDeepEqual({
+            count: 5,
+            rows: sampleCustomers
           });
           done();
         });
@@ -246,7 +226,6 @@ describe('Customer endpoints', function () {
   describe('POST /api/v1/customer', function () {
 
     it('Should return 400 if referenced imageMeta is not found', function (done) {
-      services.imageMetaService.get = () => null;
       request(app)
         .post('/api/v1/customer')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -264,25 +243,25 @@ describe('Customer endpoints', function () {
     });
 
     it('Should return 200 with stored customer data', function (done) {
-      services.customerService.create = () => customer;
+      const requestBody = {name: 'John', surname: 'Doe'};
       request(app)
         .post('/api/v1/customer')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
-        .send({name: 'John', surname: 'Doe'})
+        .send(requestBody)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(customer);
+          expect(res.body).to.be.shallowDeepEqual(requestBody);
           done();
         });
     });
 
     it('Should allow admin user to create customers', function (done) {
-      services.customerService.create = () => customer;
+      const requestBody = {name: 'John', surname: 'Doe'};
       request(app)
         .post('/api/v1/customer')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .send({name: 'John', surname: 'Doe'})
+        .send(requestBody)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(customer);
+          expect(res.body).to.be.shallowDeepEqual(requestBody);
           done();
         });
     });
