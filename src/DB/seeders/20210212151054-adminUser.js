@@ -21,7 +21,7 @@ module.exports = {
       githubId: id,
       isAdmin: true
     };
-    const user = await queryInterface.rawSelect('User', {where: userData}, ['id']);
+    const user = await queryInterface.rawSelect('user', {where: userData}, ['id']);
     if (!user) {
       await queryInterface.bulkInsert('user', [userData], {});
     } else {

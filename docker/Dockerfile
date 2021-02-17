@@ -10,5 +10,6 @@ RUN mkdir -p ./config
 
 COPY src ./src
 COPY index.js ./
+COPY .sequelizerc ./
 
 CMD [ "node", "index" ]

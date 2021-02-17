@@ -4,8 +4,7 @@
   },
   "database": {
     "dialect": "mysql",
-    "env": "development",
-    "host": "localhost",
+    "host": "db",
     "port": "3306",
     "database": "crm_api_test",
     "username": "crm_api_user",

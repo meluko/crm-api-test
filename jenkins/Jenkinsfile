@@ -1,0 +1,99 @@
+def git_url = 'git@github.com:meluko/crm-api-test.git'
+
+pipeline {
+
+    agent any
+
+    parameters {
+        gitParameter(
+            name: 'VERSION',
+            branchFilter: 'origin/(.*)',
+            tagFilter: 'v*',
+            sortMode: 'DESCENDING_SMART',
+            defaultValue: 'origin/master',
+            selectedValue: 'TOP',
+            type: 'PT_BRANCH_TAG',
+            useRepository: "${git_url}"
+        )
+
+        string(
+            name: 'GITHUB_USER',
+            description: 'Github user to seed the first admin user'
+            defaultValue: 'meluko'
+        )
+
+        string(
+            name: 'CLIENT_ID',
+            description: 'Github OAuth app client id'
+        )
+
+        string(
+            name: 'CLIENT_SECRET',
+            description: 'Github OAuth app client secret'
+        )
+
+        string(
+            name: 'NAME_TAG=crm_api_test ',
+            description: 'EC2 instance name tag',
+            defaultValue: 'crm_api_test'
+        )
+
+        string(
+            name: 'AWS_REGION',
+            defaultValue: 'eu-west-1',
+            description: 'AWS region to create instance at'
+        )
+
+        string(
+            name: 'VPC_ID',
+            defaultValue: 'vpc-9b35eae2 ',
+            description: 'AWS EC2 vpc id'
+        )
+
+        string(
+            name: 'VPC_SUBNET_ID',
+            defaultValue: 'subnet-823e36e4',
+            description: 'AWS EC2 vpc subnet id'
+        )
+
+        string(
+            name: 'VPC_SUBNET_ID',
+            defaultValue: '150202238216',
+            description: 'AWS accountt id'
+        )
+    }
+
+    options {
+        ansiColor("xterm")
+        timestamps()
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: "30"))
+        timeout(time: 1, unit: "HOURS")
+    }
+
+    stages {
+
+        stage('Create CRM_API infrastructure') {
+            environment {
+                ANSIBLE_HOST_KEY_CHECKING = 'False'
+            }
+            steps {
+                script {
+                    sh 'ansible-playbook ansible/setup_infrastructure.yml'
+                }
+            }
+        }
+
+        stage('Deploy api') {
+            environment {
+                ANSIBLE_HOST_KEY_CHECKING = 'False'
+            }
+            steps {
+                script {
+                    sh 'ansible-playbook ansible/deploy.yml'
+                }
+            }
+        }
+
+    }
+}

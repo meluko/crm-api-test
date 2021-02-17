@@ -1,6 +1,6 @@
-#  Deploy CRM api test
+#  Setup AWS infrastructure to deploy CRM API
 #
-#  ansible-playbook ansible/deploy.yml
+#  ansible-playbook ansible/setup_infrastructure.yml
 #
 
 ---
@@ -33,9 +33,42 @@
     RULES:
       - proto: tcp
         ports:
-          - 443
+          - 80
         rule_desc: Allow
         cidr_ip: 0.0.0.0/0
+
+- name: Create internal_crm_client security group to access internal server
+  hosts: localhost
+  roles:
+    - create_security_group
+  vars:
+    AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
+    VPC_ID: "{{ lookup('env', 'VPC_ID') }}"
+    NAME: internal_crm_client
+    DESCRIPTION: Instances with access to internal_crm_server*
+    TAGS:
+      Name: internal_crm_client
+  post_tasks:
+    - set_fact: internal_crm_client={{ last_created_sg.group_id }}
+
+- name: Setup internal server security group to allow connections from load balancer
+  hosts: localhost
+  roles:
+    - create_security_group
+  vars:
+    AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
+    VPC_ID: "{{ lookup('env', 'VPC_ID') }}"
+    NAME: internal_crm_server
+    DESCRIPTION: Allow access to CRM API
+    TAGS:
+      Name: internal_crm_server
+    RULES:
+      - proto: tcp
+        ports:
+          - 8088
+        rule_desc: Allow
+        group_id:
+          - "{{ internal_crm_client }}"
 
 - name: Setup ssh security group
   hosts: localhost
@@ -63,7 +96,7 @@
     AWS_ACCOUNT_ID: "{{ lookup('env', 'AWS_ACCOUNT_ID') }}"
     AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
     SECURITY_GROUP_NAMES:
-      - internet_access
+      - internal_crm_server
       - ssh_access
     IAM_ROLE_NAME: crm_api
     INSTANCE_TYPE: t3.nano
@@ -94,3 +127,28 @@
   hosts: added_hosts
   roles:
     - install-dependencies
+
+- name: Setup Load balancer
+  hosts: localhost
+  roles:
+    - create-load-balancer
+  vars:
+    NAME_TAG: "{{ lookup('env', 'NAME_TAG') }}"
+    AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
+    NAME: crm-api-lb
+    SECURITY_GROUP_NAMES:
+      - internet_access
+      - internal_crm_client
+    LISTENERS:
+      - protocol: http
+        load_balancer_port: 80
+        instance_protocol: http
+        instance_port: 8088
+    HEALTH_CHECK:
+      ping_protocol: http
+      ping_port: 8088
+      ping_path: "/"
+      response_timeout: 5
+      interval: 60
+      unhealthy_threshold: 2
+      healthy_threshold: 10

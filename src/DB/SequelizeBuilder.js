@@ -11,9 +11,9 @@ module.exports = function (config) {
     password,
     dialect
   } = config;
-  const url = `mysql://${username}:${password}@${host}:${port}/${database}`;
   const options = {
-    url,
+    host,
+    port,
     dialect,
     pool: {
       max: 5,
