@@ -2,18 +2,9 @@
 
 const {expect} = require('../util/chai');
 const request = require('supertest');
-
-const config = require('config');
 const truncateTables = require('../util/truncateTables');
-const Lib = require('../../src/Lib');
-const lib = Lib({config});
-const {
-  buildAppDependencies,
-  buildApp
-} = require('../../src');
-
-const appDependencies = buildAppDependencies({config, lib});
-const app = buildApp(appDependencies);
+const createToken = require('../util/createToken');
+const {app, appDependencies} = require('../util/BuildApp');
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
@@ -26,24 +17,12 @@ const sampleCustomers = [
   {name: 'Zeppo', surname: 'Marx'}
 ];
 
-const createToken = async function (token) {
-  const userData = {
-    name: `name_${token}`,
-    surname: `surname_${token}`
-  };
-  const user = await appDependencies.services.userService.create(userData);
-  const accessTokenData = {
-    id: user.id,
-    githubId: 0
-  };
-  await appDependencies.services.authService.create(token, accessTokenData);
-};
-
 describe('Customer endpoints', function () {
 
   before(async function () {
-    await createToken(USER_TOKEN);
-    await createToken(ADMIN_TOKEN);
+    await truncateTables(appDependencies.db)(['accessToken']);
+    await createToken(appDependencies)(USER_TOKEN);
+    await createToken(appDependencies)(ADMIN_TOKEN, true);
   });
 
   beforeEach(async function () {
@@ -99,7 +78,7 @@ describe('Customer endpoints', function () {
     it('Should return 400 if referenced imageMeta is not found', function (done) {
       const requestBody = {name: 'John', surname: 'Doe', imageMetaId: 99};
       request(app)
-        .put(`/api/v1/customer/1`)
+        .put('/api/v1/customer/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .send(requestBody)
         .set('Accept', 'application/json')
@@ -130,7 +109,7 @@ describe('Customer endpoints', function () {
     it('Should return 200 if customer is successfully updated', function (done) {
       const requestBody = {name: 'John', surname: 'Doe'};
       request(app)
-        .put(`/api/v1/customer/1`)
+        .put('/api/v1/customer/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .send(requestBody)
         .set('Accept', 'application/json')
@@ -173,14 +152,14 @@ describe('Customer endpoints', function () {
 
     it('Should return 200 if customer is successfully delete', function (done) {
       request(app)
-        .delete(`/api/v1/customer/1`)
+        .delete('/api/v1/customer/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(200, done);
     });
 
     it('Should allow admin user to delete customer', function (done) {
       request(app)
-        .delete(`/api/v1/customer/1`)
+        .delete('/api/v1/customer/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, done);
     });

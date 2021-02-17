@@ -20,7 +20,7 @@ const buildAppDependencies = function (dependencies) {
   const controllers = Controllers({services, ...dependencies});
   const routes = Routes({middlewares, controllers, schemas, ...dependencies});
 
-  return {middlewares, services, db, routes, presenters, util, models, ...dependencies}
+  return {middlewares, services, db, routes, presenters, util, models, ...dependencies};
 };
 
 const buildApp = function(appDependencies) {
