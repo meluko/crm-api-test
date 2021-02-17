@@ -6,7 +6,9 @@ module.exports = function (dependencies) {
   const {Customer} = dependencies.db;
 
   const get = function (id) {
-    return Customer.findOne({where: {id}});
+    return Customer
+      .findOne({where: {id}})
+      .then(customer => customer);
   };
 
   const find = function (query) {
@@ -17,14 +19,14 @@ module.exports = function (dependencies) {
     return Customer
       .create(customerData)
       .then(user => user.reload())
-      .then(user => user.dataValues);
+      .then(user => user);
   };
 
   const update = function (customer, customerData) {
     return customer && customer
       .update(customerData)
       .then(it => it.reload())
-      .then(customer => customer && customer.dataValues);
+      .then(customer => customer && customer);
   };
 
   const destroy = function(id) {

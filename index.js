@@ -2,12 +2,15 @@
 
 const {server, ...config} = require('config');
 const lib = require('./src/Lib')({config});
-const app = require('./src')({config, lib});
+const {
+  buildAppDependencies,
+  buildApp
+} = require('./src');
 
 const {
   port
 } = server;
 
-app.listen(port, () => {
+buildApp(buildAppDependencies(({config, lib}))).listen(port, () => {
   console.info(`Server listening at http://localhost:${port}`);
 });

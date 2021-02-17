@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function ({middlewares, routes, views, lib}) {
+module.exports = function ({middlewares, routes, presenters, lib}) {
   const app = lib.express();
   app.set('trust proxy', true);
 
@@ -10,8 +10,9 @@ module.exports = function ({middlewares, routes, views, lib}) {
   app.use(middlewares.jsonBodyParser);
   app.use(middlewares.expressBunyanLogger);
 
-  app.engine('html', views);
-  app.set('views', lib.path.join(__dirname,'Views/templates'));
+  app.engine('html', presenters.html);
+  app.engine('js', presenters.js);
+  app.set('views', lib.path.join(__dirname,'Presenters/templates'));
   app.set('view engine', 'html');
 
   routes(app);

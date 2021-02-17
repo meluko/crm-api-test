@@ -1,41 +1,35 @@
 'use strict';
 
-const {expect} = require('chai');
-const sinon = require('sinon');
+const {expect} = require('../util/chai');
 const request = require('supertest');
-const BuildApp = require('../util/BuildApp');
-const UserController = require('../../src/Controllers/UserController');
-const UserRoutes = require('../../src/Routes/user');
-
-const services = {
-  userService: {},
-  authService: {}
-};
-const controllers = {userController: UserController({services})};
-
-const app = BuildApp({services, controllers, routes: UserRoutes});
+const truncateTables = require('../util/truncateTables');
+const createToken = require('../util/createToken');
+const {app, appDependencies} = require('../util/BuildApp');
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
 
-const user = {
-  id: 1,
-  name: 'Alice',
-  surname: 'Wondergirl'
-};
-
-const userList = [
-  {id: 1, name: 'Alice', surname: 'Wondergirl'},
-  {id: 2, name: 'Bob', surname: 'Squarepants'}
+const sampleUsers = [
+  {name: 'Rachel', surname: 'Green'},
+  {name: 'Monica', surname: 'Geller'},
+  {name: 'Phoebe', surname: 'Buffay'},
+  {name: 'Joseph', surname: 'Tribbiani', githubId: 3244, githubLogin: 'Joey'},
+  {name: 'Chandler', surname: 'Bing'},
+  {name: 'Ross', surname: 'Geller'}
 ];
 
 describe('User endpoints', function () {
 
-  beforeEach(function() {
-    services.authService.get = () => 'token';
-    services.authService.isValidToken = () => true;
-    services.authService.isAdminToken = () => true;
-    services.authService.tokenHasRoles = token => ADMIN_TOKEN === token;
+  beforeEach(async function () {
+    await truncateTables(appDependencies.db)(['accessToken']);
+    await truncateTables(appDependencies.db)(['user']);
+
+    for (let user of sampleUsers) {
+      await appDependencies.db.User.create(user);
+    }
+
+    await createToken(appDependencies)(USER_TOKEN);
+    await createToken(appDependencies)(ADMIN_TOKEN, true);
   });
 
   describe('GET ​/api​/v1​/user​/{userId}', function () {
@@ -47,7 +41,6 @@ describe('User endpoints', function () {
     });
 
     it('should return 403 if client is not and admin user', function (done) {
-      services.authService.isAdminToken = () => false;
       request(app)
         .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -55,20 +48,18 @@ describe('User endpoints', function () {
     });
 
     it('Should return 404 if user is not found', function (done) {
-      services.userService.get = () => null;
       request(app)
-        .get('/api/v1/user/1')
+        .get('/api/v1/user/100')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return 200 with user data', function (done) {
-      services.userService.get = () => user;
       request(app)
         .get('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(user);
+          expect(res.body).to.be.shallowDeepEqual(sampleUsers[0]);
           done();
         });
     });
@@ -86,7 +77,6 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
-      services.authService.isAdminToken = () => false;
       request(app)
         .put('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -96,9 +86,8 @@ describe('User endpoints', function () {
     });
 
     it('Should return 404 if user is not found', function (done) {
-      services.userService.get = () => null;
       request(app)
-        .put('/api/v1/user/1')
+        .put('/api/v1/user/100')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .send({name: 'Alice', surname: 'Wondergirl'})
         .set('Accept', 'application/json')
@@ -106,23 +95,14 @@ describe('User endpoints', function () {
     });
 
     it('Should return 202 with updated user data', function (done) {
-      services.userService.get = () => user;
-      services.userService.update = sinon.stub().returns(user);
-      const userId = 9325;
       const requestBody = {name: 'Alice', surname: 'Wondergirl'};
       request(app)
-        .put(`/api/v1/user/${userId}`)
+        .put('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .send(requestBody)
         .set('Accept', 'application/json')
         .expect(202, (err, res) => {
-          expect(res.body).to.be.deep.equal(user);
-          expect(services.userService.update.callCount).to.be.equal(1);
-          expect(services.userService.update.getCall(0).args[0]).to.be.equal(user);
-          expect(services.userService.update.getCall(0).args[1]).to.be.deep.equal({
-            ...requestBody,
-            isAdmin: false
-          });
+          expect(res.body).to.be.shallowDeepEqual(requestBody);
           done();
         });
     });
@@ -139,34 +119,24 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
-      services.authService.isAdminToken = () => false;
-      const userId = 1;
       request(app)
-        .delete(`/api/v1/user/${userId}`)
+        .delete('/api/v1/user/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(403, done);
     });
 
     it('Should return 404 if user is not found', function (done) {
-      services.userService.get = () => null;
       request(app)
-        .delete('/api/v1/user/1')
+        .delete('/api/v1/user/100')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return 200 if user is successfully delete', function (done) {
-      services.userService.get = () => user;
-      services.userService.destroy = sinon.stub();
-      const userId = 9325;
       request(app)
-        .delete(`/api/v1/user/${userId}`)
+        .delete('/api/v1/user/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .expect(200, () => {
-          expect(services.userService.destroy.callCount).to.be.deep.equal(1);
-          expect(services.userService.destroy.getCall(0).args[0]).to.be.deep.equal(userId);
-          done();
-        });
+        .expect(200, done);
     });
 
   });
@@ -180,7 +150,6 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not an admin user', function (done) {
-      services.authService.isAdminToken = () => false;
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -188,17 +157,13 @@ describe('User endpoints', function () {
     });
 
     it('Should return 200 with the list of stored users', function (done) {
-      services.userService.find = () => ({
-        count: userList.length,
-        rows: userList
-      });
       request(app)
         .get('/api/v1/user')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal({
-            rows: userList,
-            count: 2
+          expect(res.body).to.be.shallowDeepEqual({
+            rows: sampleUsers,
+            count: 8
           });
           done();
         });
@@ -216,7 +181,6 @@ describe('User endpoints', function () {
     });
 
     it('Should return 403 if client is not and admin user', function (done) {
-      services.authService.isAdminToken = () => false;
       request(app)
         .post('/api/v1/user')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -225,13 +189,13 @@ describe('User endpoints', function () {
     });
 
     it('Should return 200 with the stored user data', function (done) {
-      services.userService.create = () => user;
+      const requestBody = {name: 'Alice', surname: 'Wondergirl'};
       request(app)
         .post('/api/v1/user')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
-        .send({name: 'Alice', surname: 'Wondergirl'})
+        .send(requestBody)
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal(user);
+          expect(res.body).to.be.shallowDeepEqual(requestBody);
           done();
         });
     });

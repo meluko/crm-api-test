@@ -1,35 +1,28 @@
 'use strict';
 
-const {expect} = require('chai');
-const {join} = require('path');
+const {expect} = require('../util/chai');
 const request = require('supertest');
-const BuildApp = require('../util/BuildApp');
-const ImageController = require('../../src/Controllers/ImageController');
-const ImageRoutes = require('../../src/Routes/image');
-
-const services = {
-  imageMetaService: {},
-  imageService: {},
-  authService: {}
-};
-const controllers = {
-  imageController: ImageController({services})
-};
-
-const app = BuildApp({services, controllers, routes: ImageRoutes});
+const {join} = require('path');
+const {app, appDependencies} = require('../util/BuildApp');
+const truncateTables = require('../util/truncateTables');
+const createToken = require('../util/createToken');
 
 const USER_TOKEN = 'userToken';
 const ADMIN_TOKEN = 'adminToken';
-const SAMPLE_IMAGE_PATH = join(__dirname, '../assets/picture.png');
 
 describe('Image endpoints', function () {
 
-  before(function() {
-    services.authService.get = () => 'token';
-    services.authService.isValidToken = () => true;
-    services.authService.tokenHasRoles = token => [ADMIN_TOKEN, USER_TOKEN].includes(token);
+  before(async function () {
+    await truncateTables(appDependencies.db)(['accessToken']);
+    await createToken(appDependencies)(USER_TOKEN);
+    await createToken(appDependencies)(ADMIN_TOKEN, true);
   });
 
+  beforeEach(async function () {
+    await truncateTables(appDependencies.db)(['imageMeta']);
+    const path = join(__dirname, '../assets/picture.png');
+    await appDependencies.db.ImageMeta.create({path});
+  });
 
   describe('GET /api/v1/image/{imageId}', function () {
 
@@ -40,15 +33,13 @@ describe('Image endpoints', function () {
     });
 
     it('Should return 404 if image is not found', function (done) {
-      services.imageMetaService.get = () => null;
       request(app)
-        .get('/api/v1/image/{imageId}')
+        .get('/api/v1/image/100')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .expect(404, done);
     });
 
     it('Should return uploaded image', function (done) {
-      services.imageMetaService.get = () => ({id: 1, path: SAMPLE_IMAGE_PATH});
       request(app)
         .get('/api/v1/image/1')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
@@ -56,7 +47,6 @@ describe('Image endpoints', function () {
     });
 
     it('Should allow admin user to download images', function (done) {
-      services.imageMetaService.get = () => ({id: 1, path: SAMPLE_IMAGE_PATH});
       request(app)
         .get('/api/v1/image/1')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
@@ -82,29 +72,23 @@ describe('Image endpoints', function () {
     });
 
     it('Should return 200 with uploaded imageMeta data', function (done) {
-      const targetFileName = 'uploads/0001.png';
-      services.imageService.saveImage = () => targetFileName;
-      services.imageMetaService.create = ({path}) => ({id: 1, path});
       request(app)
         .post('/api/v1/image')
         .set('Authorization', `Bearer ${USER_TOKEN}`)
         .attach('file', join(__dirname, '../assets/picture.png'))
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal({id: 1, path: targetFileName});
+          expect(res.body).to.be.shallowDeepEqual({id: 2});
           done();
         });
     });
 
     it('Should allow admin user to upload imageMetas', function (done) {
-      const targetFileName = 'uploads/0001.png';
-      services.imageService.saveImage = () => targetFileName;
-      services.imageMetaService.create = ({path}) => ({id: 1, path});
       request(app)
         .post('/api/v1/image')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .attach('file', join(__dirname, '../assets/picture.png'))
         .expect(200, (err, res) => {
-          expect(res.body).to.be.deep.equal({id: 1, path: targetFileName});
+          expect(res.body).to.be.shallowDeepEqual({id: 2});
           done();
         });
     });
