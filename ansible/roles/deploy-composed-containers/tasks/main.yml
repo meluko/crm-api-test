@@ -32,8 +32,11 @@
   shell:
     $(aws ecr get-login --no-include-email --region {{ AWS_REGION }})
 
-- name: Start composed containers
-  shell: docker-compose -f ~/docker-compose.yml up --force-recreate -d
+- name: Restart composed containers
+  shell: docker-compose stop; \
+    docker-compose rm -f; \
+    docker-compose pull; \
+    docker-compose up -d
 
 - name: remove orphan images
   shell:
