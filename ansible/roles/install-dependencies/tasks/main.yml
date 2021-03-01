@@ -28,14 +28,6 @@
     enabled: yes
   become: true
 
-- name: Setup docker containers' logrotate
-  include_role:
-    name: pdcw_roles/roles/setup-logrotate
-  vars:
-    LOGROTATE_CONFIG_FILE_PATH: /etc/logrotate.d/docker-container
-    ROTATE_PATH: /var/lib/docker/containers/*/*.log
-    ROTATE: 30
-
 - name: Add ec2-user to docker group
   user:
     name: "ec2-user"
