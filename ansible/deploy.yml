@@ -44,3 +44,11 @@
     - launch-migrations
   vars:
     GITHUB_USER: "{{ lookup('env', 'GITHUB_USER') }}"
+
+- name: Refresh ELB health check
+  hosts: localhost
+  roles:
+    - refresh-health-check
+  vars:
+    ELB_NAME: "{{ lookup('env', 'NAME_TAG') }}"
+    AWS_REGION: "{{ lookup('env', 'AWS_REGION') }}"
