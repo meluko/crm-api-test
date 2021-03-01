@@ -61,6 +61,11 @@ pipeline {
             defaultValue: '150202238216',
             description: 'AWS accountt id'
         )
+
+        string(
+            name: 'KEY_NAME',
+            description: 'AWS EC2 keypair name'
+        )
     }
 
     options {
