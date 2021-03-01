@@ -17,7 +17,7 @@
     ROLE_NAME: crm_api
     ROLE_DESCRIPTION: Role to be used in crm_api instance
     MANAGED_POLICIES:
-      - pdcw_ecr_allow_pull_images
+      - allow_pull_images
 
 - name: Setup internet_access security group
   hosts: localhost

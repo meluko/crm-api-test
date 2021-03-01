@@ -33,7 +33,7 @@ pipeline {
         )
 
         string(
-            name: 'NAME_TAG=crm_api_test ',
+            name: 'NAME_TAG=crm_api_test',
             description: 'EC2 instance name tag',
             defaultValue: 'crm_api_test'
         )
@@ -46,7 +46,7 @@ pipeline {
 
         string(
             name: 'VPC_ID',
-            defaultValue: 'vpc-9b35eae2 ',
+            defaultValue: 'vpc-9b35eae2',
             description: 'AWS EC2 vpc id'
         )
 
@@ -57,9 +57,8 @@ pipeline {
         )
 
         string(
-            name: 'VPC_SUBNET_ID',
-            defaultValue: '150202238216',
-            description: 'AWS accountt id'
+            name: 'AWS_ACCOUNT_ID',
+            description: 'AWS account id'
         )
 
         string(
