@@ -10,7 +10,7 @@ pipeline {
             branchFilter: 'origin/(.*)',
             tagFilter: 'v*',
             sortMode: 'DESCENDING_SMART',
-            defaultValue: 'origin/master',
+            defaultValue: 'origin/main',
             selectedValue: 'TOP',
             type: 'PT_BRANCH_TAG',
             useRepository: "${git_url}"
