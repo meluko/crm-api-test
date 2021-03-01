@@ -1,0 +1,7 @@
+---
+- name: Refresh ELB health check
+  shell:
+    aws elb configure-health-check \
+      --region {{ AWS_REGION }} \
+      --load-balancer-name {{ ELB_NAME }} \
+      --health-check Target=HTTP:8088/,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
