@@ -33,7 +33,7 @@ pipeline {
         )
 
         string(
-            name: 'NAME_TAG=crm_api_test',
+            name: 'NAME_TAG',
             description: 'EC2 instance name tag',
             defaultValue: 'crm_api_test'
         )
