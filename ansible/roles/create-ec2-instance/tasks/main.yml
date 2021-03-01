@@ -8,7 +8,7 @@
   register: ec2_instances
 
 - set_fact: instance_running={{ ec2_instances.instances | length > 0 }}
-- set_fact: key_name={{ KEY_NAME | default(DEFAULT_KEY_NAME, true) }}
+- set_fact: key_name={{ KEY_NAME }}
 
 - name: Create EC2 instance if needed. Using key {{ key_name }}
   ec2:
