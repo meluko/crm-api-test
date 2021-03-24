@@ -3,7 +3,6 @@
 ## The Agile Monkeys CRM API Test
 - [Brief description](#brief-description) 
 - [Setup development environment](#setup-development-environment) 
-  * [Generate self-signed certificates](#generate-self-signed-certificates)
   * [Running mysql](#running-mysql)
   * [Creating a Github OAuth app](#creating-a-github-oauth-app)
   * [Run migrations and seeds](#run-migrations-and-seeds)
