@@ -18,15 +18,13 @@ module.exports = function (dependencies) {
   const create = function (customerData) {
     return Customer
       .create(customerData)
-      .then(user => user.reload())
-      .then(user => user);
+      .then(customer => customer.reload());
   };
 
   const update = function (customer, customerData) {
     return customer && customer
       .update(customerData)
-      .then(it => it.reload())
-      .then(customer => customer && customer);
+      .then(it => it.reload());
   };
 
   const destroy = function(id) {
