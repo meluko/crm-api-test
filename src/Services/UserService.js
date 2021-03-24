@@ -16,15 +16,13 @@ module.exports = function ({db}) {
   const create = function (userData) {
     return User
       .create(userData)
-      .then(user => user.reload())
-      .then(user => user.dataValues);
+      .then(user => user.reload());
   };
 
   const update = async function (user, userData) {
     return user && user
       .update(userData)
-      .then(it => it.reload())
-      .then(user => user && user.dataValues);
+      .then(it => it.reload());
   };
 
   const destroy = function (id) {
