@@ -152,3 +152,9 @@
       interval: 60
       unhealthy_threshold: 2
       healthy_threshold: 10
+      
+- name: Setup ECR repository
+  hosts: localhost
+  tasks:
+    - ecs_ecr:
+        name: crm_api_test      
